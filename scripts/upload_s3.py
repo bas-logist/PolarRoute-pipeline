@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 S3_ENV_VAR_NAME = "S3_UPLOAD"
 UPLOAD_DIR = os.path.join(os.getenv("PIPELINE_DIRECTORY"), "upload")
 TARGET_EXTENSIONS = (".json.gz", ".yaml.gz", ".json")
-
-# TODO change to env var config for these
 BUCKET_NAME = os.getenv("S3_BUCKET", None)
 S3_ENDPOINT = os.getenv("S3_ENDPOINT", None)
 S3_KEY = os.getenv("S3_KEY", None)
