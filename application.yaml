@@ -123,6 +123,9 @@ application:
         - script:
             name: upload_push_all.sh
             depends: metadata_siis_all.sh
+        - script:
+            name: upload_s3.sh
+            depends: metadata_siis_all.sh
         # - script:
         #     name: publish_html.sh # temporarily disabled
         #     depends: metadata_siis_all.sh
