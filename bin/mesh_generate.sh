@@ -2,32 +2,28 @@
 
 set -e
 
-# Local pipeline directory
-pipeline_directory=$PIPELINE_DIRECTORY
-
 # Date for indexing
 date=$(date --utc +"%Y-%m-%d")
 
 # Extract config name from name of config file
-mesh_config=$1
-mesh_config_file=$(basename $mesh_config)
-mesh_name=${mesh_config_file%".config.json"}
+mesh_config_file_only=$(basename ${MESH_CONFIG_FILE})
+mesh_name=${mesh_config_file_only%".config.json"}
 
 # Set up output directory
-output_directory="${pipeline_directory}/outputs"
 output_name="${mesh_name}.mesh.json"
-mkdir -p $output_directory/${mesh_name}/${date}
+mkdir -p ${OUTPUTS}/${mesh_name}/${date}
 
-
-# Set up log file names
-log_directory="${pipeline_directory}/logs"
+# Necessary because MeshiPhi 'create_mesh' prepends current workdir to every 'folder' in 
+# the mesh configs, even if you provide a full path
+ln -s ${DATASTORE} ./datastore
 
 # Create the mesh
 echo "Generating $mesh_name mesh"
-create_mesh ${mesh_config} -o ${output_directory}/${mesh_name}/${date}/${output_name} \
-            >> ${log_directory}/${mesh_name}_${date}.out \
-            2>> ${log_directory}/${mesh_name}_${date}.err
+create_mesh ${MESH_CONFIG_FILE} -o ${OUTPUTS}/${mesh_name}/${date}/${output_name}
 
 # Copy file into most_recent directory to be picked up by next script
-mkdir -p ${pipeline_directory}/outputs/most_recent
-cp ${output_directory}/${mesh_name}/${date}/${output_name} ${output_directory}/most_recent/${output_name}
+mkdir -p ${OUTPUTS}/most_recent
+cp ${OUTPUTS}/${mesh_name}/${date}/${output_name} ${OUTPUTS}/most_recent/${output_name}
+
+# Remove the symlink safely
+unlink ./datastore

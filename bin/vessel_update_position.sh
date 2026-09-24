@@ -5,21 +5,15 @@ set -e
 # The purpose of this script is to obtain the vessel (SDA) latest
 # position and insert it into the required csv file
 
-# Get absolute path of pipeline directory
-pipeline_directory=$PIPELINE_DIRECTORY
-
+#TODO: get real positions
 # Extract lat and long from arguments
 vessel_lat=-55.0811
 vessel_lon=-51.8750
 
-# Extract vessel name
-vessel_name=SDA
-
 # Extract output filename
-csv_output_file=sda_position_latest.csv
-
+csv_output_file=${VESSEL_NAME}_position_latest.csv
 
 # Write lat and long to output file
 echo 'Updating vessel position'
-echo 'Name,Lat,Long,Source,Destination' > $pipeline_directory/configs/waypoints/$csv_output_file
-echo $vessel_name,$vessel_lat,$vessel_lon,X, >> $pipeline_directory/configs/waypoints/$csv_output_file
+echo 'Name,Lat,Long,Source,Destination' > ${OUTPUTS}/configs/waypoints/$csv_output_file
+echo $VESSEL_NAME,$vessel_lat,$vessel_lon,X, >> ${OUTPUTS}/configs/waypoints/$csv_output_file

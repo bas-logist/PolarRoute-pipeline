@@ -2,38 +2,33 @@
 
 set -e
 
-# Extract mesh name from name of mesh file
-mesh_output=$1
-mesh_output_file=$(basename $mesh_output)
-mesh_name=${mesh_output_file%".mesh.json"}
-
-# Extract vessel name from name of config file
-vessel_config=$2
-vessel_config_file=$(basename $vessel_config)
-vessel_name=${vessel_config_file%".config.json"}
+# Create fullpaths from environment args provided to the script
+region_mesh_fullpath="${OUTPUTS}/most_recent/${MESH_NAME}.json"
+vessel_config_fullpath="${VESSEL_CONFIGS}/${VESSEL_NAME}.config.json"
 
 # Date for indexing
 date=$(date --utc +"%Y-%m-%d")
 
-# Where to source and store the most_recent meshes
-input_directory="${PIPELINE_DIRECTORY}/inputs"
-output_directory="${PIPELINE_DIRECTORY}/outputs/${mesh_name}_${vessel_name}/${date}"
+# Where to store the most_recent meshes
+output_directory="${OUTPUTS}/${MESH_NAME}_${VESSEL_NAME}/${date}"
 mkdir -p $output_directory
 
-# Set up log file names
-log_directory="${PIPELINE_DIRECTORY}/logs/${mesh_name}_${date}"
+# ?Necessary because MeshiPhi prepends current workdir to every 'folder' in 
+# the mesh configs, even if you provide a full path
+#ln -s ${DATASTORE} ./datastore
 
 ### Run PolarRoute
 # Build mesh done externally so just copy it over
-cp $mesh_output $output_directory/
+cp ${region_mesh_fullpath} ${output_directory}/
 
 # Simulate vehicle
 echo "Simulating $vessel_name vessel for $mesh_name"
-add_vehicle ${vessel_config} ${output_directory}/${mesh_name}.mesh.json \
-            -o ${output_directory}/${mesh_name}_${vessel_name}.vessel.json \
-            >> ${log_directory}.out \
-            2>>${log_directory}.err
+add_vehicle ${vessel_config_fullpath} ${output_directory}/${mesh_name}.mesh.json \
+            -o ${output_directory}/${mesh_name}_${vessel_name}.vessel.json
 
 # Copy output back to most recent folder
 cp ${output_directory}/${mesh_name}_${vessel_name}.vessel.json \
-   ${PIPELINE_DIRECTORY}/outputs/most_recent/${mesh_name}_${vessel_name}.vessel.json
+   ${OUTPUT_DIRECTORY}/most_recent/${mesh_name}_${vessel_name}.vessel.json
+
+# Remove symlink
+#unlink ./datastore
