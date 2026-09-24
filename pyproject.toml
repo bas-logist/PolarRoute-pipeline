@@ -1,0 +1,11 @@
+[project]
+name = "polarroute-pipeline"
+version = "1.0.0"
+description = "A data pipeline to automate ocean/sea ice mesh generation, for optimised vessel routes"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "copernicusmarine>=2.4.1",
+    "cylc-flow>=8.6.6",
+    "meshiphi==2.3.1",
+]
