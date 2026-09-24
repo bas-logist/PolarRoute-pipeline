@@ -1,0 +1,50 @@
+[runtime]
+{% for REGION_VESSEL in REGIONS_VESSELS %}
+    [[root]]
+        # All jobs on the HPC should be set to use Slurm.
+        # slurm_platform is defined in the 'flow/global.cylc' file.
+        platform = slurm_platform
+        [[[directives]]]
+            # all on Rocky for now
+            --partition = rocky
+            --account = rocky
+    [[region_vessel_config_checker]]
+        [[[directives]]]
+            --time = 00:05:00
+    [[create_dirs]]
+        [[[directives]]]
+            --time = 00:05:00
+    [[data_retrieve_amsr]]
+        [[[directives]]]
+            --time = 00:15:00 # large file to download
+    [[data_get_credentials]]
+        [[[directives]]]
+            --time = 00:02:00
+    [[data_retrieve_duacs]]
+        [[[directives]]]
+            --time = 00:15:00 # large file to download
+    [[data_subset_duacs]]
+        [[[directives]]]
+            --time = 00:10:00
+    [[check_active_hours]]
+        [[[directives]]]
+            --time = 00:01:00
+    [[check_datastore_manifest]]
+        [[[directives]]]
+            --time = 00:05:00
+    [[ mesh_generate_{{ REGION_VESSEL["region"] }} ]]
+        [[[directives]]]
+            --time = 00:30:00
+            --mem = 20G
+    [[ vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} ]]
+        [[[directives]]]
+            --time = 00:20:00
+            --mem = 10G
+    [[ vessel_update_position_{{ REGION_VESSEL["vessel"] }} ]]
+        [[[directives]]]
+            --time = 00:10:00
+    [[ waypoints_build_{{ REGION_VESSEL["vessel"] }} ]]
+        [[[directives]]]
+            --time = 00:10:00
+    [[ routes_calculate_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} ]]
+{% endfor %}
