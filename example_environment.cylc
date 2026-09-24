@@ -1,0 +1,22 @@
+[runtime]
+    [[root]]
+        [[[environment]]]
+            # These are global environment variables, which can be accessed by any pipeline step
+            PYTHON_PATH = "/path/to/python/in/appropriate/virtual/env/python"
+            # for DATASTORE through HTML, use the production locations for prod, or 
+            # any accessible path with room for big files for testing
+            DATASTORE = "/path/to/datastore"
+            OUTPUTS = "/path/to/outputs"
+            UPLOAD = "/path/to/upload"
+            PUSH = "/path/to/push"
+            HTML = "/path/to/html"
+            # Give hours of the day when you're OK with the application running
+            APPLICATION_ACTIVEHOURS = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+            DATASTORE_MANIFEST_DEPTH = "4"
+            # the following are paths to a CopernicusMarine API username and password,
+            # for downloading data
+            COPERNICUS_FILE_USERNAME = "/path/to/.copernicusmarine/user"
+            COPERNICUS_FILE_PASSWORD = "/path/to/.copernicusmarine/password"
+            # where configs for environments and vessels will be stored.
+            ENVIRONMENTAL_CONFIGS = "/path/to/environment/configs"
+            VESSEL_CONFIGS = "/path/to/vessel/configs"
