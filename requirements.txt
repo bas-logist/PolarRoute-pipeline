@@ -3,7 +3,7 @@ cdsapi
 copernicusmarine==2.0.0
 cylc-flow==8.6.5
 meshiphi==2.3.1
-netcdf>=1.7.4
+netCDF4>=1.7.4
 xarray
 bas-geoplot
 sap @ git+https://github.com/antarctica/simple-action-pipeline@main
