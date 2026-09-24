@@ -160,9 +160,9 @@ Now that everything is set up, the *PolarRoute-pipeline* can be used. Please ref
 
 ##
 
-## Further configuration of the cylc-PolarRoute-pipeline
+## Further configuration of the PolarRoute-pipeline
 
-We provide a mandatory `--set-file` when we play the cylc-PolarRoute-pipeline. The set file specifies vital configuration settings. These are:
+We provide a mandatory `--set-file` when we play the PolarRoute-pipeline. The set file specifies vital configuration settings. These are:
 - SITE: The site argument is used to load **appropriate provisioning** for the platform you intend to use. When a site is provided, the pipeline finds a file with the same name in the `site` directory, and loads it. If you open `hpc_defaults` you can see that for many pipeline steps, it specifies maximum run time and memory.
 - REGIONS_VESSELS: The regions_vessels argument specifies which regions and vessels need meshes, routes e.t.c. calculating for them. After some initial set-up, you can flexibly add or remove regions and vessels just by providing a new file, without a need to change the pipeline code.
 
