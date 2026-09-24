@@ -29,7 +29,6 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
 
 2. **Create a Python virtual environment**
    The Python version must be **Python 3.9** or higher (3.12 was used during development).
-   `uv` was used for the original project, so uv.lock and pyproject.toml are provided.
 
    - Check the available Python with `python --version`
    - If required, install or load a compatible python version. Your HPC administrator will be able to help with getting a compatible Python version.
