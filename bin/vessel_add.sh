@@ -3,7 +3,7 @@
 set -e
 
 # Create fullpaths from environment args provided to the script
-region_mesh_fullpath="${OUTPUTS}/most_recent/${MESH_NAME}.json"
+region_mesh_fullpath="${OUTPUTS}/most_recent/${MESH_NAME}.mesh.json"
 vessel_config_fullpath="${VESSEL_CONFIGS}/${VESSEL_NAME}.config.json"
 
 # Date for indexing
@@ -15,7 +15,7 @@ mkdir -p $output_directory
 
 # ?Necessary because MeshiPhi prepends current workdir to every 'folder' in 
 # the mesh configs, even if you provide a full path
-#ln -s ${DATASTORE} ./datastore
+ln -s ${DATASTORE} ./datastore
 
 ### Run PolarRoute
 # Build mesh done externally so just copy it over
