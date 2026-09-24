@@ -11,12 +11,6 @@ logger = logging.getLogger(__name__)
 DESCRIPTION = "Create a subset of an original DUACS NetCDF file, selecting only vgos and ugos variables"
 VERSION = "0.0.1"
 
-# Determine root of pipeline directory
-pipeline_directory = os.getenv("PIPELINE_DIRECTORY")
-
-# Determine duacs data directory
-duacs_directory = os.path.join(pipeline_directory, 'datastore', 'currents', 'duacs-nrt', 'global')
-
 
 def check_directory_exists(input_directory: list):
     """
@@ -33,26 +27,25 @@ def check_directory_exists(input_directory: list):
     return output_directory
 
 
-def check_duacs_directory(duacsdir):
+def check_duacs_directory(duacsdir, subset_search_string):
     """
     Check the duacs directory to see if there are any original files that need
     to be subsetted. Make a list of those files
     """
     files_to_subset = []
-    files_to_subset = glob.glob(os.path.join(duacsdir, "nrt_global_allsat_phy_l4_*.nc"))
+    files_to_subset = glob.glob(os.path.join(duacsdir, subset_search_string+"*.nc"))
     
     return files_to_subset
 
 
-def subset_duacs_files(filepaths: list):
+def subset_duacs_files(filepaths: list, original_prefix: str, subset_prefix: str):
     """
     For each filepath, create the desired subsetted NetCDF file.
     """
     for infilepath in filepaths:
-        infiledate = os.path.basename(infilepath).split \
-            ('nrt_global_allsat_phy_l4_')[-1].split('_')[0]
+        infiledate = os.path.basename(infilepath).split(original_prefix + '_')[-1].split('_')[0]
         outfiledate = infiledate[:4]+'-'+infiledate[4:6]+'-'+infiledate[6:]
-        outfilepath = os.path.join(os.path.dirname(infilepath), 'duacs_nrt_'+outfiledate+'.nc')
+        outfilepath = os.path.join(os.path.dirname(infilepath), subset_prefix + "_" + outfiledate + '.nc')
         logger.info("Subsetting input file: %s", infilepath)
         logger.info("Creating output file: %s", outfilepath)
 
@@ -82,20 +75,26 @@ def main():
     """
     Create a subset of an original DUACS NetCDF file, selecting only vgos and ugos variables
     """
-        
-    parser = argparse.ArgumentParser(description=DESCRIPTION + ' v' + VERSION)
-    parser.add_argument("-d", "--duacs-directory", help="Override default duacs directory, default="+duacs_directory, action="store", dest='duacsdir', default=duacs_directory)
-    parser.add_argument("-k", "--keep-original", help="Keep the original input file(s)", action="store_true", dest='keep', default=False)
-    args = parser.parse_args()
+    # get environment variables
+    # note that I can't get booleans from the flow.cylc hence messing with string cases 
+    DATASTORE = os.environ.get("DATASTORE")
+    KEEP_ORIGINAL_DUACS = os.environ.get("KEEP_ORIGINAL_DUACS").upper()
 
+    # the string pattern used to identify files that haven't been subsetted yet
+    DUACS_ORIGINAL_PREFIX = os.environ.get("DUACS_ORIGINAL_PREFIX")
+    # the prefix to attach to subsetted files
+    DUACS_SUBSET_PREFIX = os.environ.get("DUACS_SUBSET_PREFIX")
 
-    # Now kick off main
+    # Determine duacs data directory
+    duacs_directory = os.path.join(DATASTORE, 'currents', 'duacs-nrt', 'global')
 
-    duacsdir = check_directory_exists(args.duacsdir)
-    if duacsdir is not None:
-        files_to_subset = check_duacs_directory(duacsdir)
-        subset_duacs_files(files_to_subset)
-        if not args.keep:
+    # Find the DUACS directory and subset files which need it
+    # Delete files if the config says to
+    duacs_directory = check_directory_exists(duacs_directory)
+    if duacs_directory is not None:
+        files_to_subset = check_duacs_directory(duacs_directory, DUACS_ORIGINAL_PREFIX)
+        subset_duacs_files(files_to_subset, DUACS_ORIGINAL_PREFIX, DUACS_SUBSET_PREFIX)
+        if KEEP_ORIGINAL_DUACS == "FALSE":
             delete_files(files_to_subset)
     
 
