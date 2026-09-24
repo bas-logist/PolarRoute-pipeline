@@ -2,7 +2,7 @@
 
 PolarRoute-pipeline is a data pipeline used to automate the generation of ocean/sea-ice meshes and optimised routes for ocean vessel route-planning. This data pipeline forms part of the BAS Operational PolarRoute (OPR) project.
 
-User documentation for PolarRoute-pipeline can be found [here](https://bas-amop.github.io/PolarRoute-pipeline/).
+User documentation for PolarRoute-pipeline can be found [here](https://bas-logist.github.io/PolarRoute-pipeline/).
 
 ##  
   
@@ -56,7 +56,7 @@ If you use a HPC such as JASMIN, cylc may be configured on there already. Consul
 If you're on a platform that doesn't have cylc installed on it, you can set things up like so:
 
 1. Create a directory called 'flow', which will contain **cylc global configs**. These configs will apply to **every cylc pipeline** you run. 
-   - E.g. the 'global.cylc' file defines PLATFORMS on which the pipeline can be run, under the section [platforms], and symlinks for processes. 
+   - The 'global.cylc' file defines platforms on which the pipeline can be run, under the section [platforms], and symlinks for processes. 
 
 2. Set the environment variable CYLC_CONF_PATH to your flow directory: `setenv CYLC_CONF_PATH "/<your_path>/flow"`
 
