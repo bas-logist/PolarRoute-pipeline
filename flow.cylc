@@ -1,0 +1,85 @@
+#!jinja2
+
+# Note that 'SITE' and 'REGIONS_VESSELS' are set with a set-file passed at time of play, letting you change deployment
+# configs. See: https://cylc.github.io/cylc-doc/8.0.3/html/user-guide/writing-workflows/jinja2.html#the-s-and-set-file-options 
+
+# SITE lets you select your site for configuration. See: 
+# https://cylc.github.io/cylc-doc/stable/html/workflow-design-guide/portable-workflows.html
+
+# REGIONS_VESSELS lets you make meshes and calculate routes only for those regions and vessels
+# you need.
+
+# lets you more-easily swap between live and test environment variables
+%include environment.cylc
+
+[scheduler]
+    allow implicit tasks = True
+[scheduling]
+    [[graph]]
+        R1 = """
+        {% for REGION_VESSEL in REGIONS_VESSELS %}
+            data_get_credentials => data_retrieve_duacs => data_subset_duacs
+            data_subset_duacs & data_retrieve_amsr => \
+            check_active_hours => check_datastore_manifest => \
+            mesh_generate_{{ REGION_VESSEL["region"] }} => vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} => \
+            vessel_update_position_{{ REGION_VESSEL["vessel"] }} => waypoints_build_{{ REGION_VESSEL["vessel"] }} =>
+            routes_calculate_{{ REGION_VESSEL["region"] }}
+        {% endfor %}
+            """
+[runtime]
+{% for REGION_VESSEL in REGIONS_VESSELS %}
+    [[create_dirs]]
+        script = ${PYTHON_PATH} -c 'import create_dirs; create_dirs.main()'
+    [[data_retrieve_amsr]]
+        script = data_retrieve_amsr.sh
+        [[[environment]]]
+            # huge dataset - look in directory before downloading fresh
+            AMSR_URLS_NORTH_START = "https://seaice.uni-bremen.de/data/amsr2/asi_daygrid_swath/n6250/netcdf" #year after
+            AMSR_URLS_SOUTH_START = "https://seaice.uni-bremen.de/data/amsr2/asi_daygrid_swath/s6250/netcdf" #year after
+            AMSR_URLS_NORTH_MIDDLE = "asi-AMSR2-n6250-" #date after
+            AMSR_URLS_SOUTH_MIDDLE = "asi-AMSR2-s6250-" #date after
+            AMSR_URLS_END = "-v5.4.nc"
+    [[data_get_credentials]]
+        script = data_get_credentials.sh
+    [[data_retrieve_duacs]]
+        script = data_retrieve_duacs.sh
+        [[[environment]]]
+            DUACS_ORIGINAL_PREFIX = "nrt_global_allsat_phy_l4"
+            DUACS_SUBSET_PREFIX = "duacs_nrt"
+    [[data_subset_duacs]]
+        script = ${PYTHON_PATH} -c 'import data_subset_duacs; data_subset_duacs.main()'
+        [[[environment]]]
+            KEEP_ORIGINAL_DUACS = False
+            DUACS_ORIGINAL_PREFIX = "nrt_global_allsat_phy_l4" # for identifying files which need subsetting
+            DUACS_SUBSET_PREFIX = "duacs_nrt"
+    [[check_active_hours]]
+        script = ${PYTHON_PATH} -c 'import check_active_hours; check_active_hours.main()'
+    [[check_datastore_manifest]]
+        script = ${PYTHON_PATH} -c 'import check_datastore_manifest; check_datastore_manifest.main()'
+    [[ mesh_generate_{{ REGION_VESSEL["region"] }} ]]
+        script = mesh_generate.sh
+        [[[environment]]]
+            MESH_CONFIG_FILE = "${ENVIRONMENTAL_CONFIGS}/amsr_{{ REGION_VESSEL["region"] }}.config.json"
+    [[ vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} ]]
+        script = "vessel_add.sh"
+        [[[environment]]]
+            MESH_NAME = "amsr_{{ REGION_VESSEL["region"] }}"
+            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
+    [[ vessel_update_position_{{ REGION_VESSEL["vessel"] }} ]]
+        script = "vessel_update_position.sh"
+        [[[environment]]]
+            VESSEL_NAME = {{ REGION_VESSEL["vessel"] }}
+    [[waypoints_build_sda]]
+        script = "waypoints_build.sh"
+        [[[environment]]]
+            VESSEL_NAME = {{ REGION_VESSEL["vessel"] }}
+    [[routes_calculate_southern_sda]]
+        script = "routes_calculate.sh"
+        [[[environment]]]
+            MESH_NAME = "amsr_south"
+            VESSEL_NAME = "SDA"
+{% endfor %}
+
+
+# This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
+{% include 'site/' ~ SITE ~ '.cylc' %}

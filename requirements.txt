@@ -1,6 +1,10 @@
 polar-route==1.0.0
 cdsapi
 copernicusmarine==2.0.0
+cylc-flow==8.6.5
+meshiphi==2.3.1
+netCDF4>=1.7.4
+xarray
 bas-geoplot
 sap @ git+https://github.com/antarctica/simple-action-pipeline@main
 py-meshiphi-geojson2png @ git+https://github.com/matscorse/py-meshiphi-geojson2png.git

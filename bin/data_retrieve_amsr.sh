@@ -9,14 +9,11 @@
 
 set -e
 
-# Get absolute path of pipeline directory
-pipeline_directory=$PIPELINE_DIRECTORY
-
 # Get the current date
 current_date=$(date --utc +%Y%m%d)
 
 # Where to save AMSR data
-save_directory="$pipeline_directory/datastore/sic/amsr2"
+save_directory="$DATASTORE/sic/amsr2"
 
 # wget retries and timeouts
 retries=3
@@ -31,8 +28,8 @@ for ((i = 1; i <= 3; i++)); do
 	year=$(date -d "$current_date -$i days" +%Y)
 	
 	# Set source of files to retrieve
-	north_file="https://seaice.uni-bremen.de/data/amsr2/asi_daygrid_swath/n6250/netcdf/${year}/asi-AMSR2-n6250-${date}-v5.4.nc"
-	south_file="https://seaice.uni-bremen.de/data/amsr2/asi_daygrid_swath/s6250/netcdf/${year}/asi-AMSR2-s6250-${date}-v5.4.nc"
+	north_file="${AMSR_URLS_NORTH_START}/${year}/${AMSR_URLS_NORTH_MIDDLE}${date}${AMSR_URLS_END}"
+	south_file="${AMSR_URLS_SOUTH_START}/${year}/${AMSR_URLS_SOUTH_MIDDLE}${date}${AMSR_URLS_END}"
 
 	# Retrieve the files
 	if ! wget -r -nv -nc -nd -np -nH --tries=${retries} --timeout=${timeout} -e robots=off "${north_file}" -P $save_directory/north/ &> /dev/null; then

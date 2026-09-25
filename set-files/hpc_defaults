@@ -1,0 +1,2 @@
+SITE = "bas_hpc"
+REGIONS_VESSELS = [{"region": 'north', "vessel": "SDA"}, {"region": 'south', "vessel": "SDA"}, {"region": 'central', "vessel": "SDA"}]

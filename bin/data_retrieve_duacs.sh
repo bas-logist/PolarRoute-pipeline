@@ -12,14 +12,8 @@
 
 set -e
 
-# Local pipeline directory
-pipeline_directory=$PIPELINE_DIRECTORY
-
-# Determine the scripts directory
-scripts_directory=$pipeline_directory/scripts
-
 # Where to put output files
-save_directory=$pipeline_directory/datastore/currents/duacs-nrt/global/
+save_directory=${DATASTORE}/currents/duacs-nrt/global/
 
 # Create the output dir if it doesn't exist
 mkdir -p "$save_directory"
@@ -32,8 +26,8 @@ for ((i = 0; i <= 3; i++)); do
     originaldate=$(date -d "$current_date -$i days" +%Y%m%d)
     date=$(date -d "$current_date -$i days" +%Y-%m-%d)
     echo "${date}"
-    originalfilename="$save_directory/nrt_global_allsat_phy_l4_${originaldate}_${originaldate}.nc"
-    filename="$save_directory/duacs_nrt_${date}.nc"
+    originalfilename="$save_directory/${DUACS_ORIGINAL_PREFIX}_${originaldate}_${originaldate}.nc"
+    filename="$save_directory/${DUACS_PREFIX}_${date}.nc"
 
     # Only download if not present in the datastore
     if (test -f "$originalfilename") || (test -f "$filename"); then
@@ -42,7 +36,7 @@ for ((i = 0; i <= 3; i++)); do
         # Download the data
         if ! copernicusmarine get \
             --dataset-id cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D \
-            --filter "*nrt_global_allsat_phy_l4_${originaldate}*" \
+            --filter "*${DUACS_ORIGINAL_PREFIX}_${originaldate}*" \
             --output-directory "$save_directory" \
             --no-directories \
             --disable-progress-bar \
@@ -53,7 +47,3 @@ for ((i = 0; i <= 3; i++)); do
         fi
     fi
 done
-
-# Subset any downloaded original DUACS NetCDF files
-python $scripts_directory/data_subset_duacs.py
-

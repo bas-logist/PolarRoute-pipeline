@@ -5,6 +5,10 @@ logs/*
 inputs/*
 outputs/*
 
+# Ignore cylc files that will contain site and user-specific data
+flow/global.cylc
+environment.cylc
+
 # Ignore workflow manager
 /workflow-manager/
 /wfmanager/recent.operational-polarroute/
