@@ -35,6 +35,6 @@ and this project aims to adhere to [Semantic Versioning](https://semver.org/spec
 - NA
 
 
-## [1.0.0]
+## [v2.0.6]
 
-- First release
+For releases from v2.0.6 and earlier, please see the descriptions under 'Releases' on the GitHub page: https://github.com/bas-logist/PolarRoute-pipeline/releases 
