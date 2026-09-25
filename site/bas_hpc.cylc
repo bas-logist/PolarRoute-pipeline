@@ -20,21 +20,26 @@
     [[data_get_credentials]]
         [[[directives]]]
             --time = 00:02:00
+            --mem = 500M
     [[data_retrieve_duacs]]
         [[[directives]]]
             --time = 00:15:00 # large file to download
+            --mem = 500M
     [[data_subset_duacs]]
         [[[directives]]]
             --time = 00:10:00
+            --mem = 500M
     [[check_active_hours]]
         [[[directives]]]
             --time = 00:01:00
+            --mem = 50M
     [[check_datastore_manifest]]
         [[[directives]]]
             --time = 00:05:00
+            --mem = 500M
     [[ mesh_generate_{{ REGION_VESSEL["region"] }} ]]
         [[[directives]]]
-            --time = 00:30:00
+            --time = 00:40:00
             --mem = 20G
     [[ vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} ]]
         [[[directives]]]
