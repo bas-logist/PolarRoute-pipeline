@@ -3,11 +3,11 @@
 set -e
 
 # Get the vessel origin
-origin_input_file=${OUTPUTS}/configs/waypoints/${VESSEL_NAME}_position_latest.csv
+origin_input_file=${WAYPOINT_CONFIGS}/${VESSEL_NAME}_position_latest.csv
 origin=$(head --lines=2 ${origin_input_file} | tail --lines=1)
 
 # Get the destinations input
-destinations_input_file=${OUTPUTS}/configs/waypoints/standard_destinations.csv
+destinations_input_file=${WAYPOINT_CONFIGS}/standard_destinations.csv
 
 # Set output file
 output_file=${MOST_RECENT}/waypoints.csv
