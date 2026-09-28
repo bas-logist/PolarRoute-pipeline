@@ -77,7 +77,7 @@ def main():
     """
     # get environment variables
     # note that I can't get booleans from the flow.cylc hence messing with string cases 
-    DATASTORE = os.environ.get("DATASTORE")
+    OUTPUT_DIRECTORY = os.environ.get("OUTPUT_DIRECTORY")
     KEEP_ORIGINAL_DUACS = os.environ.get("KEEP_ORIGINAL_DUACS").upper()
 
     # the string pattern used to identify files that haven't been subsetted yet
@@ -85,14 +85,11 @@ def main():
     # the prefix to attach to subsetted files
     DUACS_SUBSET_PREFIX = os.environ.get("DUACS_SUBSET_PREFIX")
 
-    # Determine duacs data directory
-    duacs_directory = os.path.join(DATASTORE, 'currents', 'duacs-nrt', 'global')
-
     # Find the DUACS directory and subset files which need it
     # Delete files if the config says to
-    duacs_directory = check_directory_exists(duacs_directory)
-    if duacs_directory is not None:
-        files_to_subset = check_duacs_directory(duacs_directory, DUACS_ORIGINAL_PREFIX)
+    OUTPUT_DIRECTORY = check_directory_exists(OUTPUT_DIRECTORY)
+    if OUTPUT_DIRECTORY is not None:
+        files_to_subset = check_duacs_directory(OUTPUT_DIRECTORY, DUACS_ORIGINAL_PREFIX)
         subset_duacs_files(files_to_subset, DUACS_ORIGINAL_PREFIX, DUACS_SUBSET_PREFIX)
         if KEEP_ORIGINAL_DUACS == "FALSE":
             delete_files(files_to_subset)

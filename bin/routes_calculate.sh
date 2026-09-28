@@ -9,7 +9,7 @@ date=$(date --utc +"%Y-%m-%d")
 
 # Where to store the meshes
 output_directory="${OUTPUTS}/${mesh_name}_${vessel_name}/${date}"
-mkdir -p $output_directory
+mkdir -p ${output_directory}
 
 # Construct Route and output a route GeoJSON and mesh
 echo "Constructing $route_name optimised route for $vessel_name in $mesh_name"

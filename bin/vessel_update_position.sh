@@ -15,5 +15,5 @@ csv_output_file=${VESSEL_NAME}_position_latest.csv
 
 # Write lat and long to output file
 echo 'Updating vessel position'
-echo 'Name,Lat,Long,Source,Destination' > ${OUTPUTS}/configs/waypoints/$csv_output_file
-echo $VESSEL_NAME,$vessel_lat,$vessel_lon,X, >> ${OUTPUTS}/configs/waypoints/$csv_output_file
+echo 'Name,Lat,Long,Source,Destination' > ${OUTPUT_DIRECTORY}/$csv_output_file
+echo $VESSEL_NAME,$vessel_lat,$vessel_lon,X, >> ${OUTPUT_DIRECTORY}/$csv_output_file

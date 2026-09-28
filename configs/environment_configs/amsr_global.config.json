@@ -13,7 +13,7 @@
         {
             "loader": "GEBCO",
             "params": {
-                "file": "../datastore/bathymetry/gebco/gebco_global.nc",
+                "file": "/bathymetry/gebco/gebco_global.nc",
                 "data_name": "elevation",
                 "value_fill_types": "parent",
                 "aggregate_type": "MAX",

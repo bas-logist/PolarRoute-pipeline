@@ -11,8 +11,8 @@ ADD_VEHICLE_OUTPUT_PATH="${OUTPUTS}/${MESH_NAME}_${VESSEL_NAME}/${date}"
 mkdir -p $ADD_VEHICLE_OUTPUT_PATH
 mkdir -p $MOST_RECENT
 
-# ?Necessary because MeshiPhi prepends current workdir to every 'folder' in 
-# the mesh configs, even if you provide a full path
+# Necessary because MeshiPhi config files give the path from a 'datastore' directory in the
+# current working directory
 ln -s ${DATASTORE} ./datastore
 
 ### Run PolarRoute
@@ -26,4 +26,4 @@ cp ${output_directory}/${REGION_MESH_NAME}_${VESSEL_NAME}.vessel.json \
    ${MOST_RECENT}/${mesh_name}_${vessel_name}.vessel.json
 
 # Remove symlink
-#unlink ./datastore
+unlink ./datastore

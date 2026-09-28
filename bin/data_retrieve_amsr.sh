@@ -12,9 +12,6 @@ set -e
 # Get the current date
 current_date=$(date --utc +%Y%m%d)
 
-# Where to save AMSR data
-save_directory="$DATASTORE/sic/amsr2"
-
 # wget retries and timeouts
 retries=3
 timeout=20
@@ -32,11 +29,11 @@ for ((i = 1; i <= 3; i++)); do
 	south_file="${AMSR_URLS_SOUTH_START}/${year}/${AMSR_URLS_SOUTH_MIDDLE}${date}${AMSR_URLS_END}"
 
 	# Retrieve the files
-	if ! wget -r -nv -nc -nd -np -nH --tries=${retries} --timeout=${timeout} -e robots=off "${north_file}" -P $save_directory/north/ &> /dev/null; then
+	if ! wget -r -nv -nc -nd -np -nH --tries=${retries} --timeout=${timeout} -e robots=off "${north_file}" -P ${OUTPUT_DIRECTORY)/north/ &> /dev/null; then
 		echo AMSRv2 north data file not found: ${north_file}
 	fi
-	if ! wget -r -nv -nc -nd -np -nH --tries=${retries} --timeout=${timeout} -e robots=off "${south_file}" -P $save_directory/south/ &> /dev/null; then
-		echo AMSRv2 south data file not found: ${south_file}
+	if ! wget -r -nv -nc -nd -np -nH --tries=${retries} --timeout=${timeout} -e robots=off "${south_file}" -P ${OUTPUT_DIRECTORY}/south/ &> /dev/null; then
+		echo AMSRv2 south data file not found: ${south_file}sav
 	fi
 	
 done
