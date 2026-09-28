@@ -18,10 +18,13 @@
     [[graph]]
         R1 = """
         {% for REGION_VESSEL in REGIONS_VESSELS %}
-            data_get_credentials => data_retrieve_duacs => data_subset_duacs
-            data_subset_duacs & data_retrieve_amsr => \
-            check_active_hours => check_datastore_manifest => \
-            mesh_generate_{{ REGION_VESSEL["region"] }} => vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} => \
+            {% if not SKIP_REGION_MESH %}
+                data_get_credentials => data_retrieve_duacs => data_subset_duacs
+                data_subset_duacs & data_retrieve_amsr => \
+                check_active_hours => check_datastore_manifest => \
+                mesh_generate_{{ REGION_VESSEL["region"] }} => 
+            {% endif %}
+            vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} => \
             vessel_update_position_{{ REGION_VESSEL["vessel"] }} => waypoints_build_{{ REGION_VESSEL["vessel"] }} =>
             routes_calculate_{{ REGION_VESSEL["region"] }}
         {% endfor %}
