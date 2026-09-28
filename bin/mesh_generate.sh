@@ -22,8 +22,8 @@ echo "Generating $mesh_name mesh"
 create_mesh ${MESH_CONFIG_FILE} -o ${OUTPUTS}/${mesh_name}/${date}/${output_name}
 
 # Copy file into most_recent directory to be picked up by next script
-mkdir -p ${OUTPUTS}/most_recent
-cp ${OUTPUTS}/${mesh_name}/${date}/${output_name} ${OUTPUTS}/most_recent/${output_name}
+mkdir -p ${MOST_RECENT}
+cp ${OUTPUTS}/${mesh_name}/${date}/${output_name} ${MOST_RECENTH}/${output_name}
 
 # Remove the symlink safely
 unlink ./datastore

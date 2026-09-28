@@ -13,7 +13,7 @@ date=$(date --utc +"_%Y%m%dT%H%M%S")
 echo $date
 
 # Set up input directory
-input_directory="${pipeline_directory}/outputs/most_recent"
+input_directory="${MOST_RECENT}"
 
 # Set up output directory
 output_directory="${pipeline_directory}/upload"

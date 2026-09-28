@@ -10,7 +10,7 @@ origin=$(head --lines=2 ${origin_input_file} | tail --lines=1)
 destinations_input_file=${OUTPUTS}/configs/waypoints/standard_destinations.csv
 
 # Set output file
-output_file=${OUTPUTS}/most_recent/waypoints.csv
+output_file=${MOST_RECENT}/waypoints.csv
 
 # Write waypoints file
 echo 'Writing waypoints file'

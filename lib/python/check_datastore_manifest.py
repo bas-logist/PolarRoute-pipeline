@@ -3,12 +3,12 @@ import hashlib
 from datetime import datetime
 
 # Get environment variables provided from flow.cylc
-OUTPUTS = os.environ.get("OUTPUTS")
+MOST_RECENT = os.environ.get("MOST_RECENT")
 DATASTORE = os.environ.get("DATASTORE")
 DATASTORE_MANIFEST_DEPTH = os.environ.get("DATASTORE_MANIFEST_DEPTH") 
 
 # Determine datastore manifest checksum location
-datastore_checksum_manifest = os.path.join(OUTPUTS, 'most_recent', '.datastore.md5')
+datastore_checksum_manifest = os.path.join(MOST_RECENT, '.datastore.md5')
 
 # If there is no previous datastore manifest then there is no choice but to
 # allow the pipeline to continue.
