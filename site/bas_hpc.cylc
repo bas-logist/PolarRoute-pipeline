@@ -40,7 +40,7 @@
             --mem = 20G
     [[ vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} ]]
         [[[directives]]]
-            --time = 00:50:00
+            --time = 02:00:00
             --mem = 10G
     [[ vessel_update_position_{{ REGION_VESSEL["vessel"] }} ]]
         [[[directives]]]

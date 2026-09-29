@@ -30,8 +30,8 @@
             {% if REGION_VESSEL["region"] == "central" %}
                 mesh_geojson_split_{{ REGION_VESSEL["region"] }} => \
             {% endif %}
-            metadata_generate_all 
         {% endfor %}
+        metadata_generate_all 
             """
 [runtime]
 {% for REGION_VESSEL in REGIONS_VESSELS %}
@@ -103,7 +103,16 @@
             LATITUDE = 0.0
             MESH_GEOJSON = "amsr_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }}.mesh.geojson"
 {% endfor %}
-
+[[metadata_generate_all]]
+    # currently a sh that calls a py, might be able to make it more modular?
+    # used to be called from the 'make_file_list' shell script like so:
+    # python $scripts_directory/$script -dmisl big_string_of_file_names
+    script = ${PYTHON_PATH} -c 'import metadata_generate.py; metadata_generate("-dmisl")'
+    [[[environment]]]
+        METADATA_VERSION = "0.0.2"
+        REGIONS_VESSELS = ${REGIONS_VESSELS}
+        OUTPUT_NAME_DEFAULT = "upload_metadata.yaml"
+        OUTPUT_DIRECTORY = ${MOST_RECENT}
 
 # This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
 {% include 'site/' ~ SITE ~ '.cylc' %}

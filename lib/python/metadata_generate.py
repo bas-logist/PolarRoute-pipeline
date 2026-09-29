@@ -13,20 +13,35 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-OUTPUT_NAME_DEFAULT = "upload_metadata.yaml"
+# Get relevant environment variables from parent pipeline process
 DESCRIPTION = "Metadata file used for data transfer of files in Operational PolarRoute project"
-VERSION = "0.0.2"
-USER = os.getlogin()
+
+VERSION = os.getenv("METADATA_VERSION")
+REGIONS_VESSELS = os.getenv("REGIONS_VESSELS")
+OUTPUT_NAME_DEFAULT = os.getenv("OUTPUT_NAME_DEFAULT")
+OUTPUT_DIRECTORY = os.getenv("OUTPUT_DIRECTORY")
+USER = os.getenv("CYLC_WORKFLOW_OWNER")
 MESHIPHI_VERSION = meshiphi.__version__
 
-# global holder for valid date, using yaml 'null'
-valid_date = 'null'
-
-# Determine root of pipeline directory
-pipeline_directory = os.getenv("PIPELINE_DIRECTORY")
-
-# Determine the output directory
-output_directory = pipeline_directory + "/outputs/most_recent/"
+def create_expected_output_filelist(directory: str, 
+                                    regions_vessels: list[dict]):
+    """
+    Create a list of expected output files,
+    which we want to gather metadata from.
+    Parses a list-of-dictionaries and expects the dictionaries to be in 
+    the format: {"region": "A", "vessel": "B"}
+    """
+    expected_files = []
+    for region_vessel in regions_vessels:
+        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
+                              {region_vessel["vessel"]}.vessel.geojson")
+        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
+                                {region_vessel["vessel"]}.vessel.json")
+        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}\
+                              .mesh.json")
+    # chuck out region mesh duplicated filenames
+    expected_files = list(set(expected_files))
+    return expected_files
 
 def md5(filename):
     """
@@ -265,7 +280,7 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
         # only output to shell
         print(yaml.dump(yaml_content, sort_keys=False, width=4000, indent=4))
     else:
-        outfile = output_directory + outfilename
+        outfile = OUTPUT_DIRECTORY + outfilename
         logger.info("Creating file: %s", str(outfile))
         try:
             with open(outfile, "w") as f:
@@ -279,6 +294,9 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
 def main():
     """Metadata creation entry point
     this entry point relies on $PIPELINE_DIRECTORY being available in the environment"""
+
+    # global holder for valid date, using yaml 'null'
+    valid_date = 'null'
         
     parser = argparse.ArgumentParser(description='Create metadata file for specified file(s)')
     parser.add_argument("-d", help="Include file created date and time", action="store_true", dest='created', default=False)
@@ -307,15 +325,10 @@ def main():
     else:
         valid_date = 'null'
 
-    checked_files = check_input_filenames(args.files)
+    output_files = create_expected_output_filelist(OUTPUT_DIRECTORY, REGIONS_VESSELS)
+    checked_files = check_input_filenames(output_files)
     parameter_list = make_parameter_list(args, valid_date)
-    generate_output(checked_files, parameter_list, args.echo, valid_date, args.outfile)
-
-    
-    
-    
-
-    
+    generate_output(checked_files, parameter_list, args.echo, valid_date, args.outfile)  
 
 
 if __name__ == "__main__":
