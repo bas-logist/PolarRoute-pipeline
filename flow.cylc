@@ -31,7 +31,7 @@
                 mesh_geojson_split_{{ REGION_VESSEL["region"] }} => \
             {% endif %}
         {% endfor %}
-        metadata_generate_all => mesh_compress & metadata_compress
+        metadata_generate_all => mesh_compress & metadata_compress => upload_prepare_list => upload_prepare_all
             """
 [runtime]
 {% for REGION_VESSEL in REGIONS_VESSELS %}
@@ -116,9 +116,16 @@
     script = "mesh_compress.sh"
 [[metadata_compress]]
     script = "metadata_compress.sh"
-[[upload_prepare]]
-
-
+[[upload_prepare_list]]
+    script = ${PYTHON_PATH} -c 'import upload_prepare_list.py; upload_prepare_list()'
+    [[[environment]]]
+        INPUT_DIRECTORY = ${MOST_RECENT}
+        REGIONS_VESSELS = ${REGIONS_VESSELS}
+        OUTPUT_DIRECTORY = ${MOST_RECENT}
+        OUTPUT_FILE_PATH = ${OUTPUT_DIRECTORY} + "/upload_prepare_list.txt"
+[[upload_prepare_all]]
+    #TODO: alter the upload_prepare_all.sh script to handle loading an array from the previous
+    # step's OUTPUT_FILE_PATH
 
 # This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
 {% include 'site/' ~ SITE ~ '.cylc' %}
