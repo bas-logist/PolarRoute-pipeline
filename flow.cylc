@@ -31,7 +31,7 @@
                 mesh_geojson_split_{{ REGION_VESSEL["region"] }} => \
             {% endif %}
         {% endfor %}
-        metadata_generate_all => mesh_compress => metadata_compress
+        metadata_generate_all => mesh_compress & metadata_compress
             """
 [runtime]
 {% for REGION_VESSEL in REGIONS_VESSELS %}
@@ -44,7 +44,7 @@
             AMSR_URLS_NORTH_MIDDLE = "asi-AMSR2-n6250-" #date after
             AMSR_URLS_SOUTH_MIDDLE = "asi-AMSR2-s6250-" #date after
             AMSR_URLS_END = "-v5.4.nc"
-            OUTPUT_DIRECTORY = ${DATASTORE}/sic/amsr2
+            OUTPUT_DIRECTORY = "${DATASTORE}/sic/amsr2"
     [[data_get_credentials]]
         script = data_get_credentials.sh
     [[data_retrieve_duacs]]
@@ -116,6 +116,7 @@
     script = "mesh_compress.sh"
 [[metadata_compress]]
     script = "metadata_compress.sh"
+[[upload_prepare]]
 
 
 
