@@ -24,7 +24,8 @@ USER = os.getenv("CYLC_WORKFLOW_OWNER")
 MESHIPHI_VERSION = meshiphi.__version__
 
 def create_expected_output_filelist(directory: str, 
-                                    regions_vessels: list[dict]):
+                                    regions_vessels: list[dict],
+                                    compressed: bool):
     """
     Create a list of expected output files,
     which we want to gather metadata from.
@@ -39,8 +40,13 @@ def create_expected_output_filelist(directory: str,
                                 {region_vessel["vessel"]}.vessel.json")
         expected_files.append(f"{directory}/amsr_{region_vessel["region"]}\
                               .mesh.json")
+
     # chuck out region mesh duplicated filenames
     expected_files = list(set(expected_files))
+
+    # make compressed if option set
+    if compressed:
+        expected_files = [i + ".gz" for i in expected_files]
     return expected_files
 
 def md5(filename):
@@ -325,7 +331,7 @@ def main():
     else:
         valid_date = 'null'
 
-    output_files = create_expected_output_filelist(OUTPUT_DIRECTORY, REGIONS_VESSELS)
+    output_files = create_expected_output_filelist(OUTPUT_DIRECTORY, REGIONS_VESSELS, False)
     checked_files = check_input_filenames(output_files)
     parameter_list = make_parameter_list(args, valid_date)
     generate_output(checked_files, parameter_list, args.echo, valid_date, args.outfile)  
