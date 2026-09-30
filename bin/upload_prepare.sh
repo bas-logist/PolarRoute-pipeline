@@ -2,26 +2,19 @@
 
 set -e
 
-# Local pipeline directory
-pipeline_directory=$PIPELINE_DIRECTORY
-
-# Extract filenames to copy
-all_files_to_copy=$@
+# Extract names of files we need to prepare for upload, to an array
+readarray -t all_files_to_copy < ${FILE_LIST}
 
 # Date for indexing
 date=$(date --utc +"_%Y%m%dT%H%M%S")
 echo $date
 
-# Set up input directory
-input_directory="${MOST_RECENT}"
-
 # Set up output directory
-output_directory="${pipeline_directory}/upload"
-mkdir -p $output_directory
+mkdir -p ${OUTPUT_DIRECTORY}
 
 # remove any previous gz and json files in upload
-rm -f ${output_directory}/*.gz
-rm -f ${output_directory}/*.json
+rm -f ${OUTPUT_DIRECTORY}/*.gz
+rm -f ${OUTPUT_DIRECTORY}/*.json
 
 # Decompress and recompress files to upload directory with unique datetime
 for eachfile in $all_files_to_copy
@@ -29,20 +22,20 @@ do
     if [[ $eachfile == *".geojson.gz"* ]]; then
         file_name=${eachfile%".geojson.gz"}
         echo $file_name.geojson
-        gzip -dcf ${input_directory}/${eachfile} >${output_directory}/${file_name}${date}.geojson
-        gzip -f ${output_directory}/${file_name}${date}.geojson
+        gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.geojson
+        gzip -f ${OUTPUT_DIRECTORY}/${file_name}${date}.geojson
 
     elif [[ $eachfile == *".json.gz"* ]]; then
         file_name=${eachfile%".json.gz"}
         echo $file_name.json
-        gzip -dcf ${input_directory}/${eachfile} >${output_directory}/${file_name}${date}.json
-        gzip -f ${output_directory}/${file_name}${date}.json
+        gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.json
+        gzip -f ${OUTPUT_DIRECTORY}/${file_name}${date}.json
 
     elif [[ $eachfile == *".yaml.gz"* ]]; then
         file_name=${eachfile%".yaml.gz"}
         echo $file_name.yaml
-        gzip -dcf ${input_directory}/${eachfile} >${output_directory}/${file_name}${date}.yaml
-        yaml_file=${output_directory}/${file_name}${date}.yaml
+        gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
+        yaml_file=${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
         # Leave the metadata yaml unzipped as the next step needs to correct the unique filenames
 
     fi
