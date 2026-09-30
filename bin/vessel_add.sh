@@ -19,11 +19,11 @@ ln -s ${DATASTORE} ./datastore
 # Simulate vehicle
 echo "Simulating $vessel_name vessel for $mesh_name"
 add_vehicle ${VESSEL_CONFIG_FULLPATH} ${REGION_MESH_FULLPATH} \
-            -o ${ADD_VEHICLE_OUTPUT_PATH}/${mesh_name}_${vessel_name}.vessel.json
+            -o ${ADD_VEHICLE_OUTPUT_PATH}/${REGION_MESH_NAME}_${VESSEL_NAME}.vessel.json
 
 # Copy output up to the most recent folder
 cp ${ADD_VEHICLE_OUTPUT_PATH}/${REGION_MESH_NAME}_${VESSEL_NAME}.vessel.json \
-   ${MOST_RECENT}/${mesh_name}_${vessel_name}.vessel.json
+   ${MOST_RECENT}/${MESH_NAME}_${VESSEL_NAME}.vessel.json
 
 # Remove symlink
 unlink ./datastore
