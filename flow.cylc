@@ -79,12 +79,12 @@
     [[ vessel_update_position_{{ REGION_VESSEL["vessel"] }} ]]
         script = "vessel_update_position.sh"
         [[[environment]]]
-            VESSEL_NAME = {{ REGION_VESSEL["vessel"] }}
+            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
             WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUT}/configs/waypoints"
     [[waypoints_build_{{ REGION_VESSEL["vessel"] }}]]
         script = "waypoints_build.sh"
         [[[environment]]]
-            VESSEL_NAME = {{ REGION_VESSEL["vessel"] }}
+            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
             WAYPOINT_STATIC_CONFIGS = "${WAYPOINT_STATIC_CONFIGS}"
             WAYPOINT_FILE = "waypoints.csv"
             WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUT}/configs/waypoints"
@@ -92,19 +92,19 @@
         script = "routes_calculate.sh"
         [[[environment]]]
             MESH_NAME = "amsr_{{ REGION_VESSEL["vessel"] }}"
-            VESSEL_NAME = {{ REGION_VESSEL["vessel"] }}
+            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
             WAYPOINT_FILE = "waypoints.csv"
             WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUT}/configs/waypoints"
     [[mesh_geojson_{{ REGION_VESSEL["vessel"] }}]]
         script = "mesh_geojson.sh"
         [[[environment]]]
-            REGION_NAME = {{ REGION_VESSEL["region"] }}
+            REGION_NAME = "{{ REGION_VESSEL["region"] }}""
             MESH_NAME = "amsr_{{ REGION_VESSEL["region"] }}.mesh.json"
             MESH_GEOJSON = "amsr_{{ REGION_VESSEL["region"] }}.mesh.geojson"
     [[mesh_geojson_split_{{ REGION_VESSEL["region"] }}]]
         script = ${PYTHON_PATH} -c 'import mesh_geojson_split; mesh_geojson_split.main()'
         [[[environment]]]
-            VESSEL_NAME = {{ REGION_VESSEL["vessel"] }}
+            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}""
             LATITUDE = 0.0
             MESH_GEOJSON = "amsr_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }}.mesh.geojson"
 {% endfor %}
@@ -114,9 +114,9 @@
     script = ${PYTHON_PATH} -c 'import metadata_generate.py; metadata_generate("-dmisl")'
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
-        REGIONS_VESSELS = ${REGIONS_VESSELS}
+        REGIONS_VESSELS = "${REGIONS_VESSELS}"
         OUTPUT_NAME_DEFAULT = "upload_metadata.yaml"
-        OUTPUT_DIRECTORY = ${MOST_RECENT}
+        OUTPUT_DIRECTORY = "${MOST_RECENT}"
 [[mesh_compress]]
     script = "mesh_compress.sh"
 [[metadata_compress]]
@@ -124,16 +124,17 @@
 [[upload_prepare_file_list]]
     script = ${PYTHON_PATH} -c 'import upload_prepare_file_list.py; upload_prepare_file_list()'
     [[[environment]]]
-        INPUT_DIRECTORY = ${MOST_RECENT}
-        REGIONS_VESSELS = ${REGIONS_VESSELS}
-        OUTPUT_DIRECTORY = ${MOST_RECENT}
-        OUTPUT_FILE_PATH = ${OUTPUT_DIRECTORY} + "/upload_prepare_file_list.txt"
+        INPUT_DIRECTORY = "${MOST_RECENT}"
+        METADATA_FILE_FULLPATH =  "${INPUT_DIRECTORY}/upload_metadata.yaml.gz"
+        REGIONS_VESSELS = "${REGIONS_VESSELS}"
+        OUTPUT_DIRECTORY = "${MOST_RECENT}"
+        OUTPUT_FILE_FULLPATH = "${OUTPUT_DIRECTORY}S/upload_prepare_file_list.txt"
 [[upload_prepare]]
     script = "upload_prepare.sh"
     [[[environment]]]
-        FILE_LIST = ${MOST_RECENT} + "/upload_prepare_list.txt"
-        INPUT_DIRECTORY = ${MOST_RECENT}
-        OUTPUT_DIRECTORY = ${OUTPUT}
+        INPUT_DIRECTORY = "${MOST_RECENT}"
+        FILE_LIST = "${INPUT_DIRECTORY}/upload_prepare_list.txt"
+        OUTPUT_DIRECTORY = "${OUTPUT}"
 [[create_siis_metadata]]
     script = ${PYTHON_PATH} -c 'import metadata_siis.py; metadata_siis()'
 
