@@ -11,7 +11,7 @@ dependencies = [
     "meshiphi==2.1.13",
     "mkdocs>=1.6.1",
     "mkdocs-include-markdown-plugin>=7.3.0",
-    "mkdocs-material>=9.6.10",
+    "mkdocs-material==9.6.9",
     "mkdocstrings>=0.30.1",
     "polar-route==1.0.0",
 ]
