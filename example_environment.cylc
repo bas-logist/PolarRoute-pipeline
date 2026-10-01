@@ -21,4 +21,5 @@
             # where configs for environments and vessels will be stored.
             ENVIRONMENTAL_CONFIGS = "/path/to/environment/configs"
             VESSEL_CONFIGS = "/path/to/vessel/configs"
-            WAYPOINT_CONFIGS = "/path/to/waypoint/configs"
+            # note that static configs will go here, but dynamic configs (e.g. current vessel positions) will nest under outputs
+            WAYPOINT_STATIC_CONFIGS = "/path/to/waypoint/configs"

@@ -14,7 +14,7 @@ mkdir -p ${output_directory}
 # Construct Route and output a route GeoJSON and mesh
 echo "Constructing $route_name optimised route for $vessel_name in $mesh_name"
 optimise_routes ${route_config} ${mesh_input} \
-                ${WAYPOINT_INPUT} \
+                ${WAYPOINT_DYNAMIC_CONFIGS}/${WAYPOINT_FILE} \
                 -p -o ${output_directory}/${mesh_name}_${vessel_name}_${route_name}.route.json
 
 # Copy to most_recent directory
