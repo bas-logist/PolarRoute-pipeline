@@ -80,21 +80,21 @@
         script = "vessel_update_position.sh"
         [[[environment]]]
             VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
-            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUT}/configs/waypoints"
+            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUTS}/configs/waypoints"
     [[waypoints_build_{{ REGION_VESSEL["vessel"] }}]]
         script = "waypoints_build.sh"
         [[[environment]]]
             VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
             WAYPOINT_STATIC_CONFIGS = "${WAYPOINT_STATIC_CONFIGS}"
             WAYPOINT_FILE = "waypoints.csv"
-            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUT}/configs/waypoints"
+            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUTS}/configs/waypoints"
     [[routes_calculate_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }}]]
         script = "routes_calculate.sh"
         [[[environment]]]
             MESH_NAME = "amsr_{{ REGION_VESSEL["vessel"] }}"
             VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
             WAYPOINT_FILE = "waypoints.csv"
-            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUT}/configs/waypoints"
+            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUTS}/configs/waypoints"
     [[mesh_geojson_{{ REGION_VESSEL["vessel"] }}]]
         script = "mesh_geojson.sh"
         [[[environment]]]
@@ -134,7 +134,7 @@
     [[[environment]]]
         INPUT_DIRECTORY = "${MOST_RECENT}"
         FILE_LIST = "${INPUT_DIRECTORY}/upload_prepare_list.txt"
-        OUTPUT_DIRECTORY = "${OUTPUT}"
+        OUTPUT_DIRECTORY = "${OUTPUTS}"
 [[create_siis_metadata]]
     script = ${PYTHON_PATH} -c 'import metadata_siis.py; metadata_siis()'
 
