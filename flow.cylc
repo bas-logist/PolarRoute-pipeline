@@ -84,10 +84,9 @@
     [[waypoints_build_{{ REGION_VESSEL["vessel"] }}]]
         script = "waypoints_build.sh"
         [[[environment]]]
-            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
-            WAYPOINT_STATIC_CONFIGS = "${WAYPOINT_STATIC_CONFIGS}"
-            WAYPOINT_FILE = "waypoints.csv"
-            WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUTS}/configs/waypoints"
+            VESSEL_ORIGIN_FULLPATH = "${OUTPUTS}/configs/waypoints/{{ REGION_VESSEL["vessel"] }}_position_latest.csv"
+            WAYPOINT_INPUT_FULLPATH = "${WAYPOINT_STATIC_CONFIGS}/standard_destinations.csv"
+            WAYPOINT_OUTPUT_FULLPATH = "${OUTPUTS}/configs/waypoints/waypoints.csv"
     [[routes_calculate_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }}]]
         script = "routes_calculate.sh"
         [[[environment]]]
