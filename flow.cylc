@@ -32,7 +32,7 @@
             {% endif %}
         {% endfor %}
         metadata_generate_all => mesh_compress & metadata_compress => upload_prepare_file_list => \
-        upload_prepare
+        upload_prepare => create_siis_metadata => upload_push_all
             """
 [runtime]
 {% for REGION_VESSEL in REGIONS_VESSELS %}
@@ -137,6 +137,14 @@
         OUTPUT_DIRECTORY = "${OUTPUTS}"
 [[create_siis_metadata]]
     script = ${PYTHON_PATH} -c 'import metadata_siis.py; metadata_siis()'
+    [[[environment]]]
+        GEOJSON_LOCATION = "${UPLOAD}"
+[[upload_push_all]]
+    script = "upload_push_all.sh"
+    [[[environment]]]
+        UPLOAD_DIRECTORY = "${UPLOAD}"
+        PUSH_DIRECTORY = "${PUSH}"
+
 
 # This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
 {% include 'site/' ~ SITE ~ '.cylc' %}

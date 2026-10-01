@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 import gzip
 import json
@@ -17,6 +18,18 @@ logger = logging.getLogger(__name__)
 
 DESCRIPTION = "Generate a siis metadata file for each product uploaded via the siis-data-sync"
 VERSION = "0.0.1"
+GEOJSON_LOCATION = os.getenv("GEOJSON_LOCATION")
+
+
+def find_geojson_files(vessel: str, parent_directory: str):
+    """
+    Make a list of SIIS files, which need to have metadata composed for them
+    """
+    results = []
+    for p in pathlib.Path(parent_directory).glob("amsr_*_*.vessel_*.geojson.gz"):
+        results.append(p)
+    return results
+
 
 def md5(filename):
     """
@@ -28,22 +41,6 @@ def md5(filename):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
-def check_input_filenames(input_filenames: list):
-    """
-    from the cli arguments create a list of which files
-    require inclusion in the siis metadata file.
-    then make sure all the files exist
-    """
-    list_of_filenames_that_actually_exist = []
-
-    for a_filename in input_filenames:
-        if not os.path.isfile(a_filename):
-            logger.warning("Filename %s is not a file (or doesn't exist): Ignoring", a_filename)
-        else:
-            list_of_filenames_that_actually_exist.append(os.path.abspath(a_filename))
-            logger.info("Including filename: %s", a_filename)
-
-    return list_of_filenames_that_actually_exist
 
 def lat_long_geojson(filename):
     """
@@ -175,23 +172,14 @@ def generate_output(filenames: list):
                 f.write(json.dumps(json_content, indent=4))
         except Exception as e:
             raise Exception("Unable to write metadata file: %s", e)
-
-
+        
 
 def main():
     """
     Metadata creation entry point
     """
-        
-    parser = argparse.ArgumentParser(description=DESCRIPTION+' v'+VERSION)
-    parser.add_argument("files", help="Create siis metadata for one or more files", type=str, nargs='+')
-    args = parser.parse_args()
-
-
-    # Now kick off main
-    checked_files = check_input_filenames(args.files)
-    generate_output(checked_files)
-
+    files = find_geojson_files(GEOJSON_LOCATION)
+    generate_output(files)
 
 
 if __name__ == "__main__":

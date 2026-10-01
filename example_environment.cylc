@@ -3,7 +3,7 @@
         [[[environment]]]
             # These are global environment variables, which can be accessed by any pipeline step
             PYTHON_PATH = "/path/to/python/in/appropriate/virtual/env/python"
-            # for DATASTORE through HTML, use the production locations for prod, or 
+            # for DATASTORE through MOST_RECENT, use the production locations for prod, or 
             # any accessible path with room for big files for testing
             DATASTORE = "/path/to/datastore"
             OUTPUTS = "/path/to/outputs"
