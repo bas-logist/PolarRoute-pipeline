@@ -10,7 +10,7 @@ mesh_config_file_only=$(basename ${MESH_CONFIG_FULLPATH})
 mesh_name=${mesh_config_file_only%".config.json"}
 
 # Set up output directory
-output_dir = "${OUTPUTS}/${mesh_name}/${date}"
+output_dir=${OUTPUTS}/${mesh_name}/${date}
 mkdir -p ${output_dir}
 
 output_name="${mesh_name}.mesh.json"
