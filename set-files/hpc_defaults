@@ -1,0 +1,3 @@
+SITE = "bas_hpc"
+REGIONS_VESSELS = [{"region": 'south', "vessel": "SDA"}]
+SKIP_REGION_MESH = False

@@ -1,9 +1,9 @@
 {
     "region": {
-        "lat_min": -70,
-        "lat_max": -50,
-        "long_min": -70,
-        "long_max": -55,
+        "lat_min": 45,
+        "lat_max": 85,
+        "long_min": -80,
+        "long_max": 35,
         "start_time": "TODAY - 3",
         "end_time": "TODAY - 1",
         "cell_width": 5.0,
@@ -39,8 +39,8 @@
         {
             "loader": "amsr",
             "params": {
-                "folder": "./datastore/sic/amsr2/south/",
-                "hemisphere": "south",
+                "folder": "./datastore/sic/amsr2/north/",
+                "hemisphere": "north",
                 "value_fill_types": "parent",
                 "data_name": "SIC",
                 "fast_reprojection": true,
@@ -62,13 +62,6 @@
                     {
                         "SIC": {
                             "threshold": 5,
-                            "upper_bound": 0.9,
-                            "lower_bound": 0.1
-                        }
-                    },
-                    {
-                        "SIC": {
-                            "threshold": 0.1,
                             "upper_bound": 0.9,
                             "lower_bound": 0.1
                         }
@@ -103,7 +96,7 @@
         }
     ],
     "splitting": {
-        "split_depth": 8,
+        "split_depth": 5,
         "minimum_datapoints": 5
     }
 }
