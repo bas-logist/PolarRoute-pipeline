@@ -61,7 +61,7 @@ If you're on a platform that doesn't have cylc installed on it, you can set thin
 2. Set the environment variable CYLC_CONF_PATH to your flow directory: `setenv CYLC_CONF_PATH "/<your_path>/flow"`
 
 > [!NOTE]
-> By default, cylc will look for 'flow' in a hierarchy of locations including '/etc/cylc/flow/' and '~'. This default behaviour doesn't work well in cases where '~' is inaccessible to the nodes.
+> By default, cylc will look for 'flow' in a hierarchy of locations including '/etc/cylc/flow/' and your home directory as accessed with '~'. This default behaviour doesn't work well in cases where your home directory is inaccessible to the nodes.
 
 3. There's an `example_global.cylc` file in `PolarRoute-pipeline/flow`. Copy the file to the path you set in CYLC_CONF_PATH, and rename the copy to 'global.cylc'. Change it as follows:
    - Under 'global init-script', replace the value of 'HOME=' to your user space on the workstations.
