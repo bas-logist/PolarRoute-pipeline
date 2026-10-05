@@ -91,8 +91,8 @@ def split_geojson(latitude, filename):
     north_json_data = json.dumps(north_data, indent=4)
     south_json_data = json.dumps(south_data, indent=4)
 
-    outfilename_north = os.path.splitext(filename)[0].replace('_SDA.vessel', OUTPUT_NAME_NORTH + '_SDA.vessel') + os.path.splitext(filename)[1]
-    outfilename_south = os.path.splitext(filename)[0].replace('_SDA.vessel', OUTPUT_NAME_SOUTH + '_SDA.vessel') + os.path.splitext(filename)[1]
+    outfilename_north = os.path.splitext(filename)[0].replace('.vessel', OUTPUT_NAME_NORTH + '.vessel') + os.path.splitext(filename)[1]
+    outfilename_south = os.path.splitext(filename)[0].replace('.vessel', OUTPUT_NAME_SOUTH + '.vessel') + os.path.splitext(filename)[1]
 
     with open(outfilename_north, "w") as outfile:
         outfile.write(north_json_data)
@@ -105,7 +105,7 @@ def main():
     """Split geojson mesh file at specified constant latitude"""
         
     # Get environment variables provided from flow.cylc
-    MOST_RECENT = os.environ.get("MOST_RECENT")
+    INPUT_DIRECTORY = os.environ.get("INPUT_DIRECTORY")
     LATITUDE = float(os.environ.get("LATITUDE"))
     MESH_GEOJSON = os.environ.get("MESH_GEOJSON")
 
@@ -115,7 +115,7 @@ def main():
         sys.exit(1)
 
     input_filenames = check_input_filenames(MESH_GEOJSON)
-    split_geojson(LATITUDE, input_filenames, MOST_RECENT)
+    split_geojson(LATITUDE, input_filenames, INPUT_DIRECTORY)
 
 
 if __name__ == "__main__":

@@ -45,6 +45,7 @@ Please refer to the [Installation] (https://bas-logist.github.io/PolarRoute-pipe
 We provide a mandatory `--set-file` when we play the PolarRoute-pipeline. The set file specifies vital configuration settings. These are:
 - SITE: The site argument is used to load **appropriate provisioning** for the platform you intend to use. When a site is provided, the pipeline finds a file with the same name in the `site` directory, and loads it. If you open `hpc_defaults` you can see that for many pipeline steps, it specifies maximum run time and memory.
 - REGIONS_VESSELS: The regions_vessels argument specifies which regions and vessels need meshes, routes e.t.c. calculating for them. After some initial set-up, you can flexibly add or remove regions and vessels just by providing a new file, without a need to change the pipeline code.
+- SKIP_REGION_MESH: If 'True', the pipeline will skip to the step immediately after region mesh production.
 
 ### Worked examples: changes in resources and vessels
 
