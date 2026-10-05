@@ -17,25 +17,26 @@
 [scheduling]
     [[graph]]
         R1 = """
-        {% for REGION_VESSEL in REGIONS_VESSELS %}
+        {% for RV in REGIONS_VESSELS %}
             {% if not SKIP_REGION_MESH %}
                 data_get_credentials => data_retrieve_duacs => data_subset_duacs
                 data_subset_duacs & data_retrieve_amsr => \
                 check_active_hours => check_datastore_manifest => \
-                mesh_generate_{{ REGION_VESSEL["region"] }} => 
+                mesh_generate_{{ RV["region"] }} => 
             {% endif %}
-            vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} => \
-            vessel_update_position_{{ REGION_VESSEL["vessel"] }} => waypoints_build_{{ REGION_VESSEL["vessel"] }} => \
-            routes_calculate_{{ REGION_VESSEL["region"] }} => mesh_geojson_{{ REGION_VESSEL["vessel"] }} => \
-            {% if REGION_VESSEL["region"] == "central" %}
-                mesh_geojson_split_{{ REGION_VESSEL["region"] }} => \
+            vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
+            vessel_update_position_{{ RV["vessel"] }} => waypoints_build_{{ RV["vessel"] }} => \
+            routes_calculate_{{ RV["region"] }} => 
+            mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }} &  mesh_geojson_{{ RV["region"] }}\
+            {% if RV["region"] == "central" %}
+                mesh_geojson_split_{{ RV["region"] }} => \
             {% endif %}
         {% endfor %}
         metadata_generate_all => mesh_compress & metadata_compress => upload_prepare_file_list => \
         upload_prepare => create_siis_metadata => upload_push_all
             """
 [runtime]
-{% for REGION_VESSEL in REGIONS_VESSELS %}
+{% for RV in REGIONS_VESSELS %}
     [[data_retrieve_amsr]]
         script = data_retrieve_amsr.sh
         [[[environment]]]
@@ -65,47 +66,53 @@
         script = ${PYTHON_PATH} -c 'import check_active_hours; check_active_hours.main()'
     [[check_datastore_manifest]]
         script = ${PYTHON_PATH} -c 'import check_datastore_manifest; check_datastore_manifest.main()'
-    [[ mesh_generate_{{ REGION_VESSEL["region"] }} ]]
+    [[ mesh_generate_{{ RV["region"] }} ]]
         script = mesh_generate.sh
         [[[environment]]]
-            MESH_CONFIG_FULLPATH = "${ENVIRONMENTAL_CONFIGS}/amsr_{{ REGION_VESSEL["region"] }}.config.json"
-    [[ vessel_add_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }} ]]
+            MESH_CONFIG_FULLPATH = "${ENVIRONMENTAL_CONFIGS}/amsr_{{ RV["region"] }}.config.json"
+    [[ vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} ]]
         script = "vessel_add.sh"
         [[[environment]]]
-            REGION_MESH_NAME = "amsr_{{ REGION_VESSEL["region"] }}"
-            REGION_MESH_FULLPATH = "${MOST_RECENT}/amsr_{{ REGION_VESSEL["region"] }}.mesh.json"
-            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
-            VESSEL_CONFIG_FULLPATH ="${VESSEL_CONFIGS}/{{ REGION_VESSEL["vessel"] }}.config.json"
-    [[ vessel_update_position_{{ REGION_VESSEL["vessel"] }} ]]
+            REGION_MESH_NAME = "amsr_{{ RV["region"] }}"
+            REGION_MESH_FULLPATH = "${MOST_RECENT}/amsr_{{ RV["region"] }}.mesh.json"
+            VESSEL_NAME = "{{ RV["vessel"] }}"
+            VESSEL_CONFIG_FULLPATH ="${VESSEL_CONFIGS}/{{ RV["vessel"] }}.config.json"
+    [[ vessel_update_position_{{ RV["vessel"] }} ]]
         script = "vessel_update_position.sh"
         [[[environment]]]
-            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
+            VESSEL_NAME = "{{ RV["vessel"] }}"
             WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUTS}/configs/waypoints"
-    [[waypoints_build_{{ REGION_VESSEL["vessel"] }}]]
+    [[waypoints_build_{{ RV["vessel"] }}]]
         script = "waypoints_build.sh"
         [[[environment]]]
-            VESSEL_ORIGIN_FULLPATH = "${OUTPUTS}/configs/waypoints/{{ REGION_VESSEL["vessel"] }}_position_latest.csv"
+            VESSEL_ORIGIN_FULLPATH = "${OUTPUTS}/configs/waypoints/{{ RV["vessel"] }}_position_latest.csv"
             WAYPOINT_INPUT_FULLPATH = "${WAYPOINT_STATIC_CONFIGS}/standard_destinations.csv"
             WAYPOINT_OUTPUT_FULLPATH = "${OUTPUTS}/configs/waypoints/waypoints.csv"
-    [[routes_calculate_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }}]]
+    [[routes_calculate_{{ RV["region"] }}_{{ RV["vessel"] }}]]
         script = "routes_calculate.sh"
         [[[environment]]]
-            MESH_NAME = "amsr_{{ REGION_VESSEL["vessel"] }}"
-            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
+            MESH_NAME = "amsr_{{ RV["vessel"] }}"
+            VESSEL_NAME = "{{ RV["vessel"] }}"
             WAYPOINT_FILE = "waypoints.csv"
             WAYPOINT_DYNAMIC_CONFIGS = "${OUTPUTS}/configs/waypoints"
-    [[mesh_geojson_{{ REGION_VESSEL["vessel"] }}]]
+    [[mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }}_mesh]]
         script = "mesh_geojson.sh"
         [[[environment]]]
-            REGION_NAME = "{{ REGION_VESSEL["region"] }}"
-            MESH_NAME = "amsr_{{ REGION_VESSEL["region"] }}.mesh.json"
-            MESH_GEOJSON = "amsr_{{ REGION_VESSEL["region"] }}.mesh.geojson"
-    [[mesh_geojson_split_{{ REGION_VESSEL["region"] }}]]
+            MESH_NAME = "${MOST_RECENT}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            MESH_FULLPATH = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            OUTPUT_GEOJSON = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
+    [[mesh_geojson_{{ RV["region"] }}_mesh]]
+        script = "mesh_geojson.sh"
+        [[[environment]]]
+            MESH_NAME = "{MOST_RECENT}/amsr_{{ RV["region"] }}.mesh.json"
+            MESH_FULLPATH = "amsr_{{ RV["region"] }}.mesh.json"
+            OUTPUT_GEOJSON = "amsr_{{ RV["region"] }}.mesh.geojson"
+    [[mesh_geojson_split_{{ RV["region"] }}]]
         script = ${PYTHON_PATH} -c 'import mesh_geojson_split; mesh_geojson_split.main()'
         [[[environment]]]
-            VESSEL_NAME = "{{ REGION_VESSEL["vessel"] }}"
+            VESSEL_NAME = "{{ RV["vessel"] }}"
             LATITUDE = 0.0
-            MESH_GEOJSON = "amsr_{{ REGION_VESSEL["region"] }}_{{ REGION_VESSEL["vessel"] }}.mesh.geojson"
+            MESH_GEOJSON = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
 {% endfor %}
 [[metadata_generate_all]]
     # used to be called from the 'make_file_list' shell script like so:
@@ -143,7 +150,6 @@
     [[[environment]]]
         UPLOAD_DIRECTORY = "${UPLOAD}"
         PUSH_DIRECTORY = "${PUSH}"
-
 
 # This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
 {% include 'site/' ~ SITE ~ '.cylc' %}

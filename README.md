@@ -29,7 +29,7 @@ Please refer to the [Installation] (https://bas-logist.github.io/PolarRoute-pipe
    - It should give a result like mine: `INSTALLED PolarRoute-pipeline/run1 from /path/to/PolarRoute-pipeline`
    - It should be SYMLINKED in your specified run directory, under cylc-run. The 'original' will be in ~.
 
-4. To run your pipeline for the HPC and the SDA vessel for central, north and south regions, use the following command. See 'Further configuration of the PolarRoute-pipeline' for details of how to add or remove vessels and regions:
+4. To run your pipeline on the HPC, and for the SDA vessel in the south region, use the following command. See 'Further configuration of the PolarRoute-pipeline' for details of how to add or remove vessels and regions:
    - `cylc play PolarRoute-pipeline/<run_number_at_install> \`
    `--set-file <your_run_directory>/cylc-run/PolarRoute-pipeline/<run_number_at_install>/set-files/hpc_defaults`
 
