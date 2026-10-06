@@ -115,9 +115,9 @@ Below is an explanation of why each link/directory is required:
 2. Inside 'environment.cylc', change the variables to ones that make sense for your current deployment.
 Follow the guidance provided in the comments in that file.
    - Populate PYTHON_PATH with the path to Python in your PolarRoute-pipeline virtual enviroment
-   - Populate DATASTORE through MOST_RECENT with the directories you found/made in 'Create or locate necessary directories'
+   - Populate DATASTORE through HTML with the directories you found/made in 'Create or locate necessary directories'
    - Populate the COPERNICUS_* values with the credential files you made in 'Copernicus Marine API'
-   - Populate ENVIRONMENT_CONFIGS and VESSEL_CONFIGS with the location of these files. Currently they are 
+   - Populate ENVIRONMENTAL_CONFIGS and VESSEL_CONFIGS with the location of these files. Currently they are 
    under 'configs/environment_configs' and 'configs/vessel_configs' in this repository, but this is likely to change in the future.
 
 

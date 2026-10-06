@@ -17,6 +17,7 @@
 [scheduling]
     [[graph]]
         R1 = """
+        create_output_directories =>
         {% for RV in REGIONS_VESSELS %}
             {% if not SKIP_REGION_MESH %}
                 data_get_credentials => data_retrieve_duacs => data_subset_duacs
@@ -35,6 +36,11 @@
         clear_staging => upload_prepare => create_siis_metadata => upload_push_all
             """
 [runtime]
+    [[create_output_directories]]
+        # Ensure the directories we intend to write to, exist already
+        script = ${PYTHON_PATH} -c 'import create_output_directories.py; create_output_directories.main()'
+        [[[environment]]]
+            DIRECTORIES = "${DATASTORE},${CHECKPOINTS},${HTML},${STAGING}"
 {% for RV in REGIONS_VESSELS %}
     [[data_retrieve_amsr]]
         script = data_retrieve_amsr.sh
@@ -63,6 +69,8 @@
             OUTPUT_DIRECTORY = "${DATASTORE}/currents/duacs-nrt/global"
     [[check_datastore_manifest]]
         script = ${PYTHON_PATH} -c 'import check_datastore_manifest; check_datastore_manifest.main()'
+        [[[environment]]]
+            WORK_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
     [[ mesh_generate_{{ RV["region"] }} ]]
         script = mesh_generate.sh
         [[[environment]]]
@@ -131,6 +139,8 @@
         INPUT_DIRECTORY = "${STAGING}"
 [[metadata_compress]]
     script = "metadata_compress.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[upload_prepare_file_list]]
     script = ${PYTHON_PATH} -c 'import upload_prepare_file_list.py; upload_prepare_file_list()'
     [[[environment]]]
