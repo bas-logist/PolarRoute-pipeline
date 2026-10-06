@@ -39,7 +39,7 @@
         {
             "loader": "amsr",
             "params": {
-                "folder": "datastore/sic/amsr2/south/",
+                "folder": "./datastore/sic/amsr2/south/",
                 "hemisphere": "south",
                 "value_fill_types": "parent",
                 "data_name": "SIC",
@@ -72,7 +72,7 @@
         {
             "loader": "amsr",
             "params": {
-                "folder": "datastore/sic/amsr2/north/",
+                "folder": "./datastore/sic/amsr2/north/",
                 "hemisphere": "north",
                 "value_fill_types": "parent",
                 "data_name": "SIC",
@@ -105,7 +105,7 @@
         {
             "loader": "duacs_currents",
             "params": {
-                "folder": "datastore/currents/duacs-nrt/global/",
+                "folder": "./datastore/currents/duacs-nrt/global/",
                 "value_fill_types": "parent",
                 "data_name": "uC,vC",
                 "splitting_conditions": []

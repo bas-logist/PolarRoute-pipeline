@@ -9,13 +9,6 @@ readarray -t all_files_to_copy < ${FILE_LIST}
 date=$(date --utc +"_%Y%m%dT%H%M%S")
 echo $date
 
-# Set up output directory
-mkdir -p ${OUTPUT_DIRECTORY}
-
-# remove any previous gz and json files in upload
-rm -f ${OUTPUT_DIRECTORY}/*.gz
-rm -f ${OUTPUT_DIRECTORY}/*.json
-
 # Decompress and recompress files to upload directory with unique datetime
 for eachfile in $all_files_to_copy
 do

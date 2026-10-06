@@ -13,7 +13,7 @@
         {
             "loader": "GEBCO",
             "params": {
-                "file": "datastore/bathymetry/gebco/gebco_global.nc",
+                "file": "./datastore/bathymetry/gebco/gebco_global.nc",
                 "data_name": "elevation",
                 "value_fill_types": "parent",
                 "aggregate_type": "MAX",
@@ -39,7 +39,7 @@
         {
             "loader": "icenet",
             "params": {
-                "folder": "datastore/sic/icenet/south/",
+                "folder": "./datastore/sic/icenet/south/",
                 "value_fill_types": "parent",
                 "data_name": "SIC",
                 "splitting_conditions": [
@@ -71,7 +71,7 @@
         {
             "loader": "icenet",
             "params": {
-                "folder": "datastore/sic/icenet/north/",
+                "folder": "./datastore/sic/icenet/north/",
                 "value_fill_types": "parent",
                 "data_name": "SIC",
                 "splitting_conditions": [
@@ -103,7 +103,7 @@
         {
             "loader": "sose",
             "params": {
-                "file": "datastore/currents/sose/SOSE_surface_velocity_6yearMean_2005-2010.nc",
+                "file": "./datastore/currents/sose/SOSE_surface_velocity_6yearMean_2005-2010.nc",
                 "value_fill_types": "parent",
                 "data_name": "uC,vC",
                 "splitting_conditions": [

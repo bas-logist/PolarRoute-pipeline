@@ -26,13 +26,13 @@
             vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
             vessel_update_position_{{ RV["vessel"] }} => waypoints_build_{{ RV["vessel"] }} => \
             routes_calculate_{{ RV["region"] }} => 
-            mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }} &  mesh_geojson_{{ RV["region"] }}\
+            mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }} & mesh_geojson_{{ RV["region"] }} => \
             {% if RV["region"] == "central" %}
                 mesh_geojson_split_{{ RV["region"] }} => \
             {% endif %}
         {% endfor %}
         metadata_generate_all => mesh_compress & metadata_compress => upload_prepare_file_list => \
-        upload_prepare => create_siis_metadata => upload_push_all
+        clear_staging => upload_prepare => create_siis_metadata => upload_push_all
             """
 [runtime]
 {% for RV in REGIONS_VESSELS %}
@@ -67,13 +67,14 @@
         script = mesh_generate.sh
         [[[environment]]]
             MESH_CONFIG_FULLPATH = "${ENVIRONMENTAL_CONFIGS}/amsr_{{ RV["region"] }}.config.json"
-    
-    # put all computed outputs in shared $CYLC_WORKFLOW_SHARE_DIR
+            OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+            OUTPUT_FILENAME = "amsr_{{ RV["region"] }}.mesh.json"
+            CHECKPOINT_DIRECTORY = "${CHECKPOINT}"
     [[ vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} ]]
         script = "vessel_add.sh"
         [[[environment]]]
-            REGION_MESH_FULLPATH = "${MOST_RECENT}/amsr_{{ RV["region"] }}.mesh.json"
-            VESSEL_CONFIG_FULLPATH ="${VESSEL_CONFIGS}/{{ RV["vessel"] }}.config.json"
+            VESSEL_CONFIG_FULLPATH = "${VESSEL_CONFIGS}/{{ RV["vessel"] }}.config.json"
+            REGION_MESH_FULLPATH = "${CHECKPOINT}/amsr_{{ RV["region"] }}.mesh.json"
             OUTPUT_FILE_FULLPATH = \
             "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
     [[ vessel_update_position_{{ RV["vessel"] }} ]]
@@ -98,7 +99,7 @@
     [[mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }}_mesh]]
         script = "mesh_geojson.sh"
         [[[environment]]]
-            MESH_NAME = "${MOST_RECENT}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            MESH_NAME = "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
             MESH_FULLPATH = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
             OUTPUT_GEOJSON = \
             "{CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
@@ -106,7 +107,7 @@
         script = "mesh_geojson.sh"
         [[[environment]]]
             MESH_NAME = "amsr_{{ RV["region"] }}.mesh.json"
-            MESH_FULLPATH = "{MOST_RECENT}/amsr_{{ RV["region"] }}.mesh.json"
+            MESH_FULLPATH = "{CHECKPOINT}/amsr_{{ RV["region"] }}.mesh.json"
             OUTPUT_GEOJSON = "{CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}.mesh.geojson"
     [[mesh_geojson_split_{{ RV["region"] }}]]
         script = ${PYTHON_PATH} -c 'import mesh_geojson_split; mesh_geojson_split.main()'
@@ -126,30 +127,37 @@
         OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[mesh_compress]]
     script = "mesh_compress.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = "${STAGING}"
 [[metadata_compress]]
     script = "metadata_compress.sh"
 [[upload_prepare_file_list]]
     script = ${PYTHON_PATH} -c 'import upload_prepare_file_list.py; upload_prepare_file_list()'
     [[[environment]]]
-        INPUT_DIRECTORY = "${MOST_RECENT}"
-        METADATA_FILE_FULLPATH =  "${INPUT_DIRECTORY}/upload_metadata.yaml.gz"
+        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        METADATA_FILENAME =  "upload_metadata.yaml.gz"
         REGIONS_VESSELS = "${REGIONS_VESSELS}"
-        OUTPUT_DIRECTORY = "${MOST_RECENT}"
-        OUTPUT_FILE_FULLPATH = "${OUTPUT_DIRECTORY}S/upload_prepare_file_list.txt"
+        OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        OUTPUT_FILENAME = "upload_prepare_file_list.txt"
+[[upload_clear_staging]]
+    # Ensure old run material is out of staging area
+    script = "clear_staging.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = ${STAGING}
 [[upload_prepare]]
     script = "upload_prepare.sh"
     [[[environment]]]
-        INPUT_DIRECTORY = "${MOST_RECENT}"
+        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
         FILE_LIST = "${INPUT_DIRECTORY}/upload_prepare_list.txt"
-        OUTPUT_DIRECTORY = "${OUTPUTS}"
+        OUTPUT_DIRECTORY = "${STAGING}"
 [[create_siis_metadata]]
     script = ${PYTHON_PATH} -c 'import metadata_siis.py; metadata_siis()'
     [[[environment]]]
-        GEOJSON_LOCATION = "${UPLOAD}"
+        GEOJSON_LOCATION = "${STAGING}"
 [[upload_push_all]]
     script = "upload_push_all.sh"
     [[[environment]]]
-        UPLOAD_DIRECTORY = "${UPLOAD}"
+        UPLOAD_DIRECTORY = "${STAGING}"
         PUSH_DIRECTORY = "${PUSH}"
 
 # This fetches site-specific configuration from the matching *.cylc file in the 'site' folder

@@ -2,30 +2,17 @@
 
 set -e
 
-# Date for indexing
-date=$(date --utc +"%Y-%m-%d")
-
-# Extract config name from name of config file
-mesh_config_file_only=$(basename ${MESH_CONFIG_FULLPATH})
-mesh_name=${mesh_config_file_only%".config.json"}
-
-# Set up output directory
-output_dir=${OUTPUTS}/${mesh_name}/${date}
-mkdir -p ${output_dir}
-
-output_name="${mesh_name}.mesh.json"
-
-# Necessary because MeshiPhi 'create_mesh' prepends current workdir to every 'folder' in 
-# the mesh configs, even if you provide a full path
+# Symlinking necessary, because the config files specify their resource paths relative to 
+# a directory called 'datastore'. Search an environment config for 'folder' to
+# see an example.
 ln -s ${DATASTORE} ./datastore
 
 # Create the mesh
-echo "Generating $mesh_name mesh"
-create_mesh ${MESH_CONFIG_FULLPATH} -o ${output_dir}/${output_name}
+echo "Generating mesh: "${OUTPUT_FILENAME}
+create_mesh ${MESH_CONFIG_FULLPATH} -o ${OUTPUT_DIRECTORY}/${OUTPUT_FILENAME}
 
-# Copy file into most_recent directory to be picked up by next script
-mkdir -p ${MOST_RECENT}
-cp ${output_dir}/${output_name} ${MOST_RECENT}/${output_name}
+# Copy file into checkpoint directory, in case a partial pipeline is run later
+cp ${OUTPUT_DIRECTORY}/${OUTPUT_FILENAME} ${CHECKPOINT_DIRECTORY}/${OUTPUT_FILENAME}
 
 # Remove the symlink safely
 unlink ./datastore
