@@ -12,6 +12,5 @@ vessel_lon=-51.8750
 
 # Write lat and long to output file
 echo 'Updating vessel position'
-mkdir -p ${WAYPOINT_DYNAMIC_CONFIGS}
 echo 'Name,Lat,Long,Source,Destination' > ${VESSEL_POSITION_OUTPUT_FULLPATH}
 echo $VESSEL_NAME,$vessel_lat,$vessel_lon,X, >> ${VESSEL_POSITION_OUTPUT_FULLPATH}

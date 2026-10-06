@@ -33,14 +33,14 @@
             {% endif %}
         {% endfor %}
         metadata_generate_all => mesh_compress & metadata_compress => upload_prepare_file_list => \
-        clear_staging => upload_prepare => create_siis_metadata => upload_push_all
+        clear_staging => send_to_staging => create_siis_metadata => upload_push_all
             """
 [runtime]
     [[create_output_directories]]
         # Ensure the directories we intend to write to, exist already
-        script = ${PYTHON_PATH} -c 'import create_output_directories.py; create_output_directories.main()'
+        script = ${PYTHON_PATH} -c 'import create_output_directories; create_output_directories.main()'
         [[[environment]]]
-            DIRECTORIES = "${DATASTORE},${CHECKPOINTS},${HTML},${STAGING}"
+            DIRECTORIES = "${DATASTORE},${CHECKPOINT},${HTML},${STAGING}"
 {% for RV in REGIONS_VESSELS %}
     [[data_retrieve_amsr]]
         script = data_retrieve_amsr.sh
@@ -154,7 +154,7 @@
     script = "clear_staging.sh"
     [[[environment]]]
         INPUT_DIRECTORY = ${STAGING}
-[[upload_prepare]]
+[[send_to_staging]]
     script = "upload_prepare.sh"
     [[[environment]]]
         INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"

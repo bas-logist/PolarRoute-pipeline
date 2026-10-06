@@ -6,7 +6,7 @@
             # for DATASTORE through PUSH, use the production locations for prod, or 
             # any accessible path with room for big files for testing
             DATASTORE = "/path/to/datastore"
-            CHECKPOINTS = "/path/to/checkpoints"
+            CHECKPOINT = "/path/to/checkpoint"
             STAGING = "/path/to/staging"
             HTML = "/path/to/html"
             PUSH = "/path/to/push"
