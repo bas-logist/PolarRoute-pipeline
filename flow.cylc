@@ -1,6 +1,6 @@
 #!jinja2
 
-# Note that 'SITE' and 'REGIONS_VESSELS' are set with a set-file passed at time of play, letting you change deployment
+# Note that 'SITE', 'REGIONS_VESSELS' and 'SKIP_OPTION' are set with a set-file passed at time of play, letting you change deployment
 # configs. See: https://cylc.github.io/cylc-doc/8.0.3/html/user-guide/writing-workflows/jinja2.html#the-s-and-set-file-options 
 
 # SITE lets you select your site for configuration. See: 
@@ -9,7 +9,11 @@
 # REGIONS_VESSELS lets you make meshes and calculate routes only for those regions and vessels
 # you need.
 
-# lets you more-easily swap between live and test environment variables
+# SKIP_OPTION lets you skip all steps before and including region messel creation (option "region"),
+# all steps before and including vessel mesh creation (option "vessel"), or no steps (option "none")
+
+# Separating global variables into 'environment.cylc' lets you more-easily swap between
+# live and test environment variables
 %include environment.cylc
 
 [scheduler]
@@ -17,14 +21,27 @@
 [scheduling]
     [[graph]]
         R1 = """
-        create_output_directories =>
+        # validate the set file options first - fail early where possible
+        {% if not SKIP_OPTION in ["region", "vessel", "none"] %}
+            {{ raise("Invalid value of set-file SKIP_OPTION: " + str(SKIP_OPTION)) }}
+        {% endif %}
         {% for RV in REGIONS_VESSELS %}
-            {% if not SKIP_REGION_MESH %}
-                data_get_credentials => data_retrieve_duacs => data_subset_duacs
-                data_subset_duacs & data_retrieve_amsr => \
-                check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
+            {% if not RV["vessel"] or RV["region"] %}
+                {{ raise("Required keys missing from set-file REGIONS_VESSELS: each \
+                needs vessel and region") }}
             {% endif %}
-            vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
+        {% endfor %}
+        # run the body of the pipeline
+        {% for RV in REGIONS_VESSELS %}
+            {% if SKIP_OPTION == "vessel" %}
+                {% if SKIP_OPTION == "region" %}
+                    create_output_directories =>
+                    data_get_credentials => data_retrieve_duacs => data_subset_duacs
+                    data_subset_duacs & data_retrieve_amsr => \
+                    check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
+                {% endif %}
+                vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
+            {% endif %}
             vessel_update_position_{{ RV["vessel"] }} => waypoints_build_{{ RV["vessel"] }} => \
             routes_calculate_{{ RV["region"] }} => 
             mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }} & mesh_geojson_{{ RV["region"] }} => \
@@ -32,10 +49,18 @@
                 mesh_geojson_split_{{ RV["region"] }} => \
             {% endif %}
         {% endfor %}
-        metadata_generate_all => mesh_compress & metadata_compress => upload_prepare_file_list => \
-        clear_staging => send_to_staging => create_siis_metadata => upload_push_all
+        metadata_generate_all => mesh_compress & metadata_compress => \
+        upload_prepare_file_list => clear_staging => send_to_staging => \
+        create_siis_metadata => upload_push_all
             """
 [runtime]
+    [[validate_set_file_options]]
+        script = ${PYTHON_PATH} -c 'import validate_set_file; validate_set_file.main()'
+        [[[environment]]]
+            REGIONS_VESSELS = {{ REGIONS_VESSELS }}
+            REGIONS_VESSELS_PERMITTED = "region vessel"
+            SKIP_OPTION = {{ SKIP_OPTION }}
+            SKIP_OPTION_PERMITTED = "region vessel none"
     [[create_output_directories]]
         # Ensure the directories we intend to write to, exist already
         script = ${PYTHON_PATH} -c 'import create_output_directories; create_output_directories.main()'
@@ -83,8 +108,9 @@
         [[[environment]]]
             VESSEL_CONFIG_FULLPATH = "${VESSEL_CONFIGS}/{{ RV["vessel"] }}.config.json"
             REGION_MESH_FULLPATH = "${CHECKPOINT}/amsr_{{ RV["region"] }}.mesh.json"
-            OUTPUT_FILE_FULLPATH = \
-            "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
+            OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+            OUTPUT_FILENAME = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
+            CHECKPOINT_DIRECTORY = "${CHECKPOINT}"
     [[ vessel_update_position_{{ RV["vessel"] }} ]]
         script = "vessel_update_position.sh"
         [[[environment]]]
@@ -101,14 +127,15 @@
             ROUTE_NAME = "fuel"
             ROUTE_CONFIG_FULLPATH = "${WAYPOINT_STATIC_CONFIGS}/fuel.config.json"
             MESH_INPUT_FULLPATH = \
-            "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
+            "${CHECKPOINT}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
             WAYPOINT_CONFIG_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/waypoints.csv"
-            OUTPUT_FILE_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/{{ RV["region"] }}_{{ RV["vessel"] }}_${ROUTE_NAME}.route.json"
+            OUTPUT_FILE_FULLPATH = \
+            "${CYLC_WORKFLOW_SHARE_DIR}/{{ RV["region"] }}_{{ RV["vessel"] }}_${ROUTE_NAME}.route.json"
     [[mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }}_mesh]]
         script = "mesh_geojson.sh"
         [[[environment]]]
-            MESH_NAME = "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
-            MESH_FULLPATH = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            MESH_NAME = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            MESH_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
             OUTPUT_GEOJSON = \
             "{CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
     [[mesh_geojson_{{ RV["region"] }}_mesh]]
@@ -127,10 +154,10 @@
 [[metadata_generate_all]]
     # used to be called from the 'make_file_list' shell script like so:
     # python $scripts_directory/$script -dmisl big_string_of_file_names
-    script = ${PYTHON_PATH} -c 'import metadata_generate.py; metadata_generate("-dmisl")'
+    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate("-dmisl")'
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
-        REGIONS_VESSELS = "${REGIONS_VESSELS}"
+        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
         OUTPUT_NAME_DEFAULT = "upload_metadata.yaml"
         OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[mesh_compress]]
@@ -142,11 +169,11 @@
     [[[environment]]]
         INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[upload_prepare_file_list]]
-    script = ${PYTHON_PATH} -c 'import upload_prepare_file_list.py; upload_prepare_file_list()'
+    script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list()'
     [[[environment]]]
         INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
         METADATA_FILENAME =  "upload_metadata.yaml.gz"
-        REGIONS_VESSELS = "${REGIONS_VESSELS}"
+        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
         OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
         OUTPUT_FILENAME = "upload_prepare_file_list.txt"
 [[upload_clear_staging]]
@@ -161,7 +188,7 @@
         FILE_LIST = "${INPUT_DIRECTORY}/upload_prepare_list.txt"
         OUTPUT_DIRECTORY = "${STAGING}"
 [[create_siis_metadata]]
-    script = ${PYTHON_PATH} -c 'import metadata_siis.py; metadata_siis()'
+    script = ${PYTHON_PATH} -c 'import metadata_siis; metadata_siis()'
     [[[environment]]]
         GEOJSON_LOCATION = "${STAGING}"
 [[upload_push_all]]

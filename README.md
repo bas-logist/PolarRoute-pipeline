@@ -45,7 +45,7 @@ Please refer to the [Installation] (https://bas-logist.github.io/PolarRoute-pipe
 We provide a mandatory `--set-file` when we play the PolarRoute-pipeline. The set file specifies vital configuration settings. These are:
 - SITE: The site argument is used to load **appropriate provisioning** for the platform you intend to use. When a site is provided, the pipeline finds a file with the same name in the `site` directory, and loads it. If you open `hpc_defaults` you can see that for many pipeline steps, it specifies maximum run time and memory.
 - REGIONS_VESSELS: The regions_vessels argument specifies which regions and vessels need meshes, routes e.t.c. calculating for them. After some initial set-up, you can flexibly add or remove regions and vessels just by providing a new file, without a need to change the pipeline code.
-- SKIP_REGION_MESH: If 'True', the pipeline will skip to the step immediately after region mesh production.
+- SKIP_OPTION: If 'region', the pipeline will skip to the step immediately after region mesh production. If 'vessel', the pipeline will skip to the step immediately after vessel mesh production. If 'none', the pipeline will run from scratch.
 
 ### Worked examples: changes in resources and vessels
 
@@ -101,7 +101,7 @@ Directories and their intended uses are as follows:
 | WAYPOINT_STATIC_CONFIGS | environment.cylc | Monthly/yearly | Yes | Static files for waypoints which rarely need changing, and are not updated by pipeline runs. |
 | CYLC_WORKFLOW_SHARE_DIR | cylc built-in variable | Per run | **No** | Temporary location which is shared between all steps in 1 pipeline run. |
 | HTML | environment.cylc | Per run | Yes | Location for HTML files to be made available for a later step. Generation of these files is currently disabled. |
-| CHECKPOINTS | environment.cylc | Per run | Yes | Stores files which are computationally expensive to create from scratch. Optional skip-points in the pipeline allow you to start from these files, if they meet certain criteria. |
+| CHECKPOINT | environment.cylc | Per run | Yes | Stores files which are computationally expensive to create from scratch. Optional skip-points in the pipeline allow you to start from these files, if they meet certain criteria. |
 | STAGING | environment.cylc | Per **fully completed** run | Yes | Files in here are 'final' and ready to push. |
 | PUSH | environment.cylc | Per **fully completed** run | Yes | The production location used by SIIS and PolarRoute-server. Integrity-checking data and sending it to this location is one of the *final* steps in the pipeline. |
 
