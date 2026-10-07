@@ -26,15 +26,14 @@
             {{ raise("Invalid value of set-file SKIP_OPTION: " + str(SKIP_OPTION)) }}
         {% endif %}
         {% for RV in REGIONS_VESSELS %}
-            {% if not RV["vessel"] or RV["region"] %}
-                {{ raise("Required keys missing from set-file REGIONS_VESSELS: each \
-                needs vessel and region") }}
+            {% if "vessel" not in RV or "region" not in RV %}
+                {{ raise("Required keys missing from set-file REGIONS_VESSELS: each dictionary needs vessel and region") }}
             {% endif %}
         {% endfor %}
         # run the body of the pipeline
         {% for RV in REGIONS_VESSELS %}
-            {% if SKIP_OPTION == "vessel" %}
-                {% if SKIP_OPTION == "region" %}
+            {% if SKIP_OPTION != "vessel" %}
+                {% if SKIP_OPTION != "region" %}
                     create_output_directories =>
                     data_get_credentials => data_retrieve_duacs => data_subset_duacs
                     data_subset_duacs & data_retrieve_amsr => \
@@ -154,7 +153,7 @@
 [[metadata_generate_all]]
     # used to be called from the 'make_file_list' shell script like so:
     # python $scripts_directory/$script -dmisl big_string_of_file_names
-    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate("-dmisl")'
+    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate.main("-dmisl")'
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
         REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
@@ -169,7 +168,7 @@
     [[[environment]]]
         INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[upload_prepare_file_list]]
-    script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list()'
+    script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list.main()'
     [[[environment]]]
         INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
         METADATA_FILENAME =  "upload_metadata.yaml.gz"
@@ -185,10 +184,10 @@
     script = "upload_prepare.sh"
     [[[environment]]]
         INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
-        FILE_LIST = "${INPUT_DIRECTORY}/upload_prepare_list.txt"
+        FILE_LIST = "upload_prepare_list.txt"
         OUTPUT_DIRECTORY = "${STAGING}"
 [[create_siis_metadata]]
-    script = ${PYTHON_PATH} -c 'import metadata_siis; metadata_siis()'
+    script = ${PYTHON_PATH} -c 'import metadata_siis; metadata_siis.main()'
     [[[environment]]]
         GEOJSON_LOCATION = "${STAGING}"
 [[upload_push_all]]

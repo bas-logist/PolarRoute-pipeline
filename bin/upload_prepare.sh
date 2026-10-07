@@ -3,7 +3,7 @@
 set -e
 
 # Extract names of files we need to prepare for upload, to an array
-readarray -t all_files_to_copy < ${FILE_LIST}
+readarray -t all_files_to_copy < ${INPUT_DIRECTORY}/${FILE_LIST}
 
 # Date for indexing
 date=$(date --utc +"_%Y%m%dT%H%M%S")

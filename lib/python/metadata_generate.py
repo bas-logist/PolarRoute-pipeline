@@ -331,6 +331,9 @@ def main():
     else:
         valid_date = 'null'
 
+    print(type(REGIONS_VESSELS))
+    print(REGIONS_VESSELS)
+
     output_files = create_expected_output_filelist(OUTPUT_DIRECTORY, REGIONS_VESSELS, False)
     checked_files = check_input_filenames(output_files)
     parameter_list = make_parameter_list(args, valid_date)
