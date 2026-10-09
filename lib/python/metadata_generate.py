@@ -301,36 +301,44 @@ def get_args():
     Argument parsing
     """
     parser = argparse.ArgumentParser(description='Create metadata file for specified file(s)')
-    parser.add_argument("-d", help="Include file created date and time", action="store_true", dest='created', default=False)
-    parser.add_argument("-s", help="Include file size", action="store_true", dest='size', default=False)
-    parser.add_argument("-m", help="Include file md5sum", action="store_true", dest='md5', default=False)
-    parser.add_argument("-i", help="Include file meshiphi version", action="store_true", dest='meshiphi', default=False)
-    parser.add_argument("-l", help="Include lat/long boundaries", action="store_true", dest='latlong', default=False)
-    parser.add_argument("-e", help="Echo the metadata to shell rather than saving to file", action="store_true", dest='echo', default=False)
-    parser.add_argument("--output", help="Override default and specify output filename", action="store", dest='outfile', default=OUTPUT_NAME_DEFAULT)
-    parser.add_argument("--valid-date", help="Supply, for inclusion datetime (string) for which the data is valid.", action="store", dest='valid')
-    parser.add_argument("files", help="One or more files to create metadata for", type=str, nargs='+')
+    parser.add_argument("-d", help="Include file created date and time",
+                        action="store_true", dest='created', default=False)
+    parser.add_argument("-s", help="Include file size", action="store_true",
+                        dest='size', default=False)
+    parser.add_argument("-m", help="Include file md5sum", action="store_true",
+                        dest='md5', default=False)
+    parser.add_argument("-i", help="Include file meshiphi version", action="store_true",
+                        dest='meshiphi', default=False)
+    parser.add_argument("-l", help="Include lat/long boundaries", action="store_true",
+                        dest='latlong', default=False)
+    parser.add_argument("-e", help="Echo the metadata to shell rather than saving to file",
+                        action="store_true", dest='echo', default=False)
+    parser.add_argument("--output", help="Override default and specify output filename",
+                        action="store", dest='outfile', default=OUTPUT_NAME_DEFAULT)
+    parser.add_argument("--valid_date", help="Supply, for inclusion datetime (string) for " \
+                        "which the data is valid.", action="store", dest='valid')
+    parser.add_argument("files", help="One or more files to create metadata for",
+                        type=str, nargs='+')
     return parser.parse_args()
     
 
-def main():
-    """Metadata creation entry point
-    this entry point relies on $PIPELINE_DIRECTORY being available in the environment"""
-    args = get_args()
-    
-    # global holder for valid date, using yaml 'null'
-    valid_date = 'null'
+def main(created, size, md5, meshiphi, latlong, echo, outfile, files, **kwargs):
+    """
+    Metadata creation entry point
+    """
+    valid_date = kwargs.get("valid_date")
+    output = kwargs.get("output")
 
-    if args.echo :
+    if echo :
         # If the purpose is to send the yaml to the shell then dont
         # pollute the shell with logger information
         logger.disabled = True
         logger.info("Echo to shell is enabled, no file will be created")
     
-    if args.valid :
-        valid_date = args.valid
-        logger.info("Supplied valid date is %s", args.valid)
+    if valid_date:
+        logger.info("Supplied valid date is %s", valid_date)
     else:
+        # use null instead of None for the YAML
         valid_date = 'null'
 
     output_files = create_expected_output_filelist(OUTPUT_DIRECTORY, REGIONS_VESSELS, False)
@@ -340,4 +348,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    """
+    If the script is being called with args rather than via cylc,
+    we want to run argparse.
+    """
+    args = get_args()
+    # note that args.files are passed before args.output and args.valid_date
+    # because it's a bit of a mess with optionals/mandatories/infinite lists
+    # down here
+    main(args.created, args.size, args.md5, args.meshiphi, args.latlong,
+         args.echo, args.outfile, args.files, args.output, args.valid_date)
