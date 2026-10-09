@@ -1,0 +1,3 @@
+SITE = "localhost"
+REGIONS_VESSELS = [{"region": 'south', "vessel": "SDA"}]
+SKIP_OPTION = "none"

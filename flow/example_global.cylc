@@ -1,0 +1,16 @@
+[platforms]
+    [[slurm_platform]]
+        hosts = localhost
+        job runner = slurm
+        retrieve job logs = True
+        install target = localhost
+        global init-script = """
+            export HOME= # a directory which is ACCESSIBLE to all nodes used by slurm
+            export CYLC_RUN_DIR=${HOME}/cylc-run
+            source <path_to_your_venv>/bin/activate
+        """
+[install]
+    [[symlink dirs]]
+        [[[slurm_platform]]]
+            run = # set to the same dir you put as HOME under [platforms][[slurm_platform]] global init-script
+        
