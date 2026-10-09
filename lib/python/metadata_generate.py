@@ -18,36 +18,9 @@ DESCRIPTION = "Metadata file used for data transfer of files in Operational Pola
 
 VERSION = os.getenv("METADATA_VERSION")
 REGIONS_VESSELS = os.getenv("REGIONS_VESSELS")
-OUTPUT_NAME_DEFAULT = os.getenv("OUTPUT_NAME_DEFAULT")
 OUTPUT_DIRECTORY = os.getenv("OUTPUT_DIRECTORY")
 USER = os.getenv("CYLC_WORKFLOW_OWNER")
 MESHIPHI_VERSION = meshiphi.__version__
-
-def create_expected_output_filelist(directory: str, 
-                                    regions_vessels: list[dict],
-                                    compressed: bool):
-    """
-    Create a list of expected output files,
-    which we want to gather metadata from.
-    Parses a list-of-dictionaries and expects the dictionaries to be in 
-    the format: {"region": "A", "vessel": "B"}
-    """
-    expected_files = []
-    for region_vessel in regions_vessels:
-        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
-                              {region_vessel["vessel"]}.vessel.geojson")
-        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
-                                {region_vessel["vessel"]}.vessel.json")
-        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}\
-                              .mesh.json")
-
-    # chuck out region mesh duplicated filenames
-    expected_files = list(set(expected_files))
-
-    # make compressed if option set
-    if compressed:
-        expected_files = [i + ".gz" for i in expected_files]
-    return expected_files
 
 def md5(filename):
     """
@@ -81,18 +54,16 @@ def check_input_filenames(input_filenames: list):
 
     return list_of_filenames_that_actually_exist
 
-def make_parameter_list(supplied_arguments, valid_date):
+def make_parameter_list(arguments: dict, valid_date):
     "from the cli options create a list of which metadata variables to generate."
     list_of_parameters = ["filepath", ]
 
     if valid_date != 'null':
-        list_of_parameters.append("valid")
+        list_of_parameters.append("valid_date")
     
-    arguments = dict(vars(supplied_arguments))
-
-    for an_argument in arguments:
-        if an_argument != "echo" and arguments[an_argument] == True:
-            list_of_parameters.append(str(an_argument))
+    for argument_key, argument_value in arguments.items():
+        if argument_value == True:
+            list_of_parameters.append(argument_key)
     
     logger.info("Including metadata parameters: %s", ' '.join(list_of_parameters))
 
@@ -232,7 +203,7 @@ def build_records(filenames, parameters, valid_date):
         param_dict = dict(blank_params)
 
         for a_param in parameters:
-            if   a_param == 'filepath':
+            if a_param == 'filepath':
                 param_dict[a_param] = a_file
             
             elif a_param == 'valid':
@@ -296,11 +267,26 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
             logger.error("Unable to create metadata file due to %s", str(e))
 
 
+def read_input_list_to_file(file_name: str):
+    """
+    Just open an input list file,
+    and return the contents as a list-of-lines.
+    """
+    lines = []
+    with open(file_name) as f:
+        for line in f:
+            lines.append(line.strip())
+    return lines
+
+
 def get_args():
     """
     Argument parsing
     """
     parser = argparse.ArgumentParser(description='Create metadata file for specified file(s)')
+    parser.add_argument("-t", help="Text file containing the fullpaths to "
+                        "files we want metadata for, each on its own line",
+                        action="store", dest="target_file_list", default=None)
     parser.add_argument("-d", help="Include file created date and time",
                         action="store_true", dest='created', default=False)
     parser.add_argument("-s", help="Include file size", action="store_true",
@@ -312,24 +298,22 @@ def get_args():
     parser.add_argument("-l", help="Include lat/long boundaries", action="store_true",
                         dest='latlong', default=False)
     parser.add_argument("-e", help="Echo the metadata to shell rather than saving to file",
-                        action="store_true", dest='echo', default=False)
-    parser.add_argument("--output", help="Override default and specify output filename",
-                        action="store", dest='outfile', default=OUTPUT_NAME_DEFAULT)
+                        action="store_true", dest='echo_shell', default=False)
+    parser.add_argument("--outfile", help="Override default and specify output filename",
+                        action="store", dest='outfile', default="upload_metadata.yaml")
     parser.add_argument("--valid_date", help="Supply, for inclusion datetime (string) for " \
                         "which the data is valid.", action="store", dest='valid')
-    parser.add_argument("files", help="One or more files to create metadata for",
-                        type=str, nargs='+')
     return parser.parse_args()
-    
 
-def main(created, size, md5, meshiphi, latlong, echo, outfile, files, **kwargs):
+
+def main(target_file_list, created, size, md5, meshiphi, latlong, echo_shell,
+         outfile, files, **kwargs):
     """
     Metadata creation entry point
     """
-    valid_date = kwargs.get("valid_date")
-    output = kwargs.get("output")
+    valid_date = kwargs.get("valid_date", None)
 
-    if echo :
+    if echo_shell:
         # If the purpose is to send the yaml to the shell then dont
         # pollute the shell with logger information
         logger.disabled = True
@@ -341,20 +325,28 @@ def main(created, size, md5, meshiphi, latlong, echo, outfile, files, **kwargs):
         # use null instead of None for the YAML
         valid_date = 'null'
 
-    output_files = create_expected_output_filelist(OUTPUT_DIRECTORY, REGIONS_VESSELS, False)
-    checked_files = check_input_filenames(output_files)
-    parameter_list = make_parameter_list(args, valid_date)
-    generate_output(checked_files, parameter_list, args.echo, valid_date, args.outfile)  
+    target_file_list = read_input_list_to_file(target_file_list)
+    checked_files = check_input_filenames(target_file_list)
+    parameter_list = make_parameter_list(
+        {
+            "created": created,
+            "size": size,
+            "md5": md5,
+            "meshiphi": meshiphi,
+            "latlong": latlong
+        }, valid_date)
+    generate_output(checked_files, parameter_list, echo_shell, valid_date,
+                    outfile)  
 
 
 if __name__ == "__main__":
     """
-    If the script is being called with args rather than via cylc,
-    we want to run argparse.
+    If the script is being called with command line arguments, rather than
+    via cylc, use argparse to get the contents.
     """
     args = get_args()
     # note that args.files are passed before args.output and args.valid_date
     # because it's a bit of a mess with optionals/mandatories/infinite lists
     # down here
     main(args.created, args.size, args.md5, args.meshiphi, args.latlong,
-         args.echo, args.outfile, args.files, args.output, args.valid_date)
+         args.echo_shell, args.target_file_list, args.outfile, args.valid_date)

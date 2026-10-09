@@ -150,14 +150,21 @@
             LATITUDE = 0.0
             MESH_GEOJSON = "${INPUT_DIRECTORY}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
 {% endfor %}
+[[metadata_get_list_of_files]]
+    script = ${PYTHON_PATH} -c 'import list_metadata_files; list_metadata_files.main()'
+    [[[environment]]]
+        DIRECTORY = "${CHECKPOINT}"
+        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
+        COMPRESSED = True
+        OUTPUT_FULL_PATH = "${CHECKPOINT}/files_needing_metadata.txt"
 [[metadata_generate_all]]
     # used to be called from the 'make_file_list' shell script like so:
     # python $scripts_directory/$script -dmisl big_string_of_file_names
-    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate.main("-dmisl")'
+    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate.main('target_file_list=${TARGET_FILE_LIST})'
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
-        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
-        OUTPUT_NAME_DEFAULT = "upload_metadata.yaml"
+        TARGET_FILE_LIST = "${CHECKPOINT}/files_needing_metadata.txt"
+        TARGET_FILE_DIRECTORY = "${CHECKPOINT}"
         OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[mesh_compress]]
     script = "mesh_compress.sh"
