@@ -30,9 +30,12 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
    - If using pip, change into the repository's root and run `pip install .`
 
 5. Create or choose an **installation directory** for your cylc pipelines. This needs to be different from where you've cloned your code.
+   - Before you run a cylc-pipeline for the first time, you run 'cylc install' on the code repository, which installs it to: your-installation-directory/cylc-run.
+   - For a test run, your home directory is usually fine, as long as the cluster e.t.c. can reach it.
+   - For production, you should probably use the same installation location for every cylc pipeline.
 
 > [!NOTE]
-> By design, cylc tries to keep development and installed code separate. Cylc will create 'cylc-run' in this location when it installs.
+> By design, cylc tries to keep development and installed code separate.
 
 
 ## Setting up cylc global configurations
