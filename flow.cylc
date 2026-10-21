@@ -1,0 +1,207 @@
+#!jinja2
+
+# Note that 'SITE', 'REGIONS_VESSELS' and 'SKIP_OPTION' are set with a set-file passed at time of play, letting you change deployment
+# configs. See: https://cylc.github.io/cylc-doc/8.0.3/html/user-guide/writing-workflows/jinja2.html#the-s-and-set-file-options 
+
+# SITE lets you select your site for configuration. See: 
+# https://cylc.github.io/cylc-doc/stable/html/workflow-design-guide/portable-workflows.html
+
+# REGIONS_VESSELS lets you make meshes and calculate routes only for those regions and vessels
+# you need.
+
+# SKIP_OPTION lets you skip all steps before and including region messel creation (option "region"),
+# all steps before and including vessel mesh creation (option "vessel"), or no steps (option "none")
+
+# Separating global variables into 'environment.cylc' lets you more-easily swap between
+# live and test environment variables
+%include environment.cylc
+
+[scheduler]
+    allow implicit tasks = True
+[scheduling]
+    [[graph]]
+        R1 = """
+        # validate the set file options first - fail early where possible
+        {% if not SKIP_OPTION in ["region", "vessel", "none"] %}
+            {{ raise("Invalid value of set-file SKIP_OPTION: " + str(SKIP_OPTION)) }}
+        {% endif %}
+        {% for RV in REGIONS_VESSELS %}
+            {% if "vessel" not in RV or "region" not in RV %}
+                {{ raise("Required keys missing from set-file REGIONS_VESSELS: each dictionary needs vessel and region") }}
+            {% endif %}
+        {% endfor %}
+        # run the body of the pipeline
+        {% for RV in REGIONS_VESSELS %}
+            {% if SKIP_OPTION != "vessel" %}
+                {% if SKIP_OPTION != "region" %}
+                    create_output_directories =>
+                    data_get_credentials => data_retrieve_duacs => data_subset_duacs
+                    data_subset_duacs & data_retrieve_amsr => \
+                    check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
+                {% endif %}
+                vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
+            {% endif %}
+            vessel_update_position_{{ RV["vessel"] }} => waypoints_build_{{ RV["vessel"] }} => \
+            routes_calculate_{{ RV["region"] }} => 
+            mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }} & mesh_geojson_{{ RV["region"] }} => \
+            {% if RV["region"] == "central" %}
+                mesh_geojson_split_{{ RV["region"] }} => \
+            {% endif %}
+        {% endfor %}
+        metadata_generate_all => mesh_compress & metadata_compress => \
+        upload_prepare_file_list => clear_staging => send_to_staging => \
+        create_siis_metadata => upload_push_all
+            """
+[runtime]
+    [[validate_set_file_options]]
+        script = ${PYTHON_PATH} -c 'import validate_set_file; validate_set_file.main()'
+        [[[environment]]]
+            REGIONS_VESSELS = {{ REGIONS_VESSELS }}
+            REGIONS_VESSELS_PERMITTED = "region vessel"
+            SKIP_OPTION = {{ SKIP_OPTION }}
+            SKIP_OPTION_PERMITTED = "region vessel none"
+    [[create_output_directories]]
+        # Ensure the directories we intend to write to, exist already
+        script = ${PYTHON_PATH} -c 'import create_output_directories; create_output_directories.main()'
+        [[[environment]]]
+            DIRECTORIES = "${DATASTORE},${CHECKPOINT},${HTML},${STAGING}"
+{% for RV in REGIONS_VESSELS %}
+    [[data_retrieve_amsr]]
+        script = data_retrieve_amsr.sh
+        [[[environment]]]
+            # huge dataset - look in directory before downloading fresh
+            AMSR_URLS_NORTH_START = "https://seaice.uni-bremen.de/data/amsr2/asi_daygrid_swath/n6250/netcdf" #year after
+            AMSR_URLS_SOUTH_START = "https://seaice.uni-bremen.de/data/amsr2/asi_daygrid_swath/s6250/netcdf" #year after
+            AMSR_URLS_NORTH_MIDDLE = "asi-AMSR2-n6250-" #date after
+            AMSR_URLS_SOUTH_MIDDLE = "asi-AMSR2-s6250-" #date after
+            AMSR_URLS_END = "-v5.4.nc"
+            OUTPUT_DIRECTORY = "${DATASTORE}/sic/amsr2"
+    [[data_get_credentials]]
+        script = data_get_credentials.sh
+    [[data_retrieve_duacs]]
+        script = data_retrieve_duacs.sh
+        [[[environment]]]
+            DUACS_ORIGINAL_PREFIX = "nrt_global_allsat_phy_l4"
+            DUACS_SUBSET_PREFIX = "duacs_nrt"
+            OUTPUT_DIRECTORY = "${DATASTORE}/currents/duacs-nrt/global"
+    [[data_subset_duacs]]
+        script = ${PYTHON_PATH} -c 'import data_subset_duacs; data_subset_duacs.main()'
+        [[[environment]]]
+            KEEP_ORIGINAL_DUACS = False
+            DUACS_ORIGINAL_PREFIX = "nrt_global_allsat_phy_l4" # for identifying files which need subsetting
+            DUACS_SUBSET_PREFIX = "duacs_nrt"
+            OUTPUT_DIRECTORY = "${DATASTORE}/currents/duacs-nrt/global"
+    [[check_datastore_manifest]]
+        script = ${PYTHON_PATH} -c 'import check_datastore_manifest; check_datastore_manifest.main()'
+        [[[environment]]]
+            WORK_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+    [[ mesh_generate_{{ RV["region"] }} ]]
+        script = mesh_generate.sh
+        [[[environment]]]
+            MESH_CONFIG_FULLPATH = "${ENVIRONMENTAL_CONFIGS}/amsr_{{ RV["region"] }}.config.json"
+            OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+            OUTPUT_FILENAME = "amsr_{{ RV["region"] }}.mesh.json"
+            CHECKPOINT_DIRECTORY = "${CHECKPOINT}"
+    [[ vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} ]]
+        script = "vessel_add.sh"
+        [[[environment]]]
+            VESSEL_CONFIG_FULLPATH = "${VESSEL_CONFIGS}/{{ RV["vessel"] }}.config.json"
+            REGION_MESH_FULLPATH = "${CHECKPOINT}/amsr_{{ RV["region"] }}.mesh.json"
+            OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+            OUTPUT_FILENAME = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
+            CHECKPOINT_DIRECTORY = "${CHECKPOINT}"
+    [[ vessel_update_position_{{ RV["vessel"] }} ]]
+        script = "vessel_update_position.sh"
+        [[[environment]]]
+            VESSEL_POSITION_OUTPUT_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/{{ RV["vessel"] }}_position_latest.csv"
+    [[waypoints_build_{{ RV["vessel"] }}]]
+        script = "waypoints_build.sh"
+        [[[environment]]]
+            VESSEL_ORIGIN_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/{{ RV["vessel"] }}_position_latest.csv"
+            WAYPOINT_INPUT_FULLPATH = "${WAYPOINT_STATIC_CONFIGS}/standard_destinations.csv"
+            WAYPOINT_OUTPUT_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}//waypoints.csv"
+    [[routes_calculate_{{ RV["region"] }}_{{ RV["vessel"] }}]]
+        script = "routes_calculate.sh"
+        [[[environment]]]
+            ROUTE_NAME = "fuel"
+            ROUTE_CONFIG_FULLPATH = "${WAYPOINT_STATIC_CONFIGS}/fuel.config.json"
+            MESH_INPUT_FULLPATH = \
+            "${CHECKPOINT}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
+            WAYPOINT_CONFIG_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/waypoints.csv"
+            OUTPUT_FILE_FULLPATH = \
+            "${CYLC_WORKFLOW_SHARE_DIR}/{{ RV["region"] }}_{{ RV["vessel"] }}_${ROUTE_NAME}.route.json"
+    [[mesh_geojson_{{ RV["region"] }}_{{ RV["vessel"] }}_mesh]]
+        script = "mesh_geojson.sh"
+        [[[environment]]]
+            MESH_NAME = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            MESH_FULLPATH = "${CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.json"
+            OUTPUT_GEOJSON = \
+            "{CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
+    [[mesh_geojson_{{ RV["region"] }}_mesh]]
+        script = "mesh_geojson.sh"
+        [[[environment]]]
+            MESH_NAME = "amsr_{{ RV["region"] }}.mesh.json"
+            MESH_FULLPATH = "{CHECKPOINT}/amsr_{{ RV["region"] }}.mesh.json"
+            OUTPUT_GEOJSON = "{CYLC_WORKFLOW_SHARE_DIR}/amsr_{{ RV["region"] }}.mesh.geojson"
+    [[mesh_geojson_split_{{ RV["region"] }}]]
+        script = ${PYTHON_PATH} -c 'import mesh_geojson_split; mesh_geojson_split.main()'
+        [[[environment]]]
+            INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+            LATITUDE = 0.0
+            MESH_GEOJSON = "${INPUT_DIRECTORY}/amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.mesh.geojson"
+{% endfor %}
+[[metadata_get_list_of_files]]
+    script = ${PYTHON_PATH} -c 'import list_metadata_files; list_metadata_files.main()'
+    [[[environment]]]
+        DIRECTORY = "${CHECKPOINT}"
+        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
+        COMPRESSED = True
+        OUTPUT_FULL_PATH = "${CHECKPOINT}/files_needing_metadata.txt"
+[[metadata_generate_all]]
+    # used to be called from the 'make_file_list' shell script like so:
+    # python $scripts_directory/$script -dmisl big_string_of_file_names
+    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate.main('target_file_list=${TARGET_FILE_LIST})'
+    [[[environment]]]
+        METADATA_VERSION = "0.0.2"
+        TARGET_FILE_LIST = "${CHECKPOINT}/files_needing_metadata.txt"
+        TARGET_FILE_DIRECTORY = "${CHECKPOINT}"
+        OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+[[mesh_compress]]
+    script = "mesh_compress.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = "${STAGING}"
+[[metadata_compress]]
+    script = "metadata_compress.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+[[upload_prepare_file_list]]
+    script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list.main()'
+    [[[environment]]]
+        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        METADATA_FILENAME =  "upload_metadata.yaml.gz"
+        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
+        OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        OUTPUT_FILENAME = "upload_prepare_file_list.txt"
+[[upload_clear_staging]]
+    # Ensure old run material is out of staging area
+    script = "clear_staging.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = ${STAGING}
+[[send_to_staging]]
+    script = "upload_prepare.sh"
+    [[[environment]]]
+        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        FILE_LIST = "upload_prepare_list.txt"
+        OUTPUT_DIRECTORY = "${STAGING}"
+[[create_siis_metadata]]
+    script = ${PYTHON_PATH} -c 'import metadata_siis; metadata_siis.main()'
+    [[[environment]]]
+        GEOJSON_LOCATION = "${STAGING}"
+[[upload_push_all]]
+    script = "upload_push_all.sh"
+    [[[environment]]]
+        UPLOAD_DIRECTORY = "${STAGING}"
+        PUSH_DIRECTORY = "${PUSH}"
+
+# This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
+{% include 'site/' ~ SITE ~ '.cylc' %}
