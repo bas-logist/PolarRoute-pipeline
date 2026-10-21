@@ -7,7 +7,7 @@ Depends on:
 ---
 
 1. Clone the repository and create and activate a python virtual environment of your choice.
-1. Inside a virtual environment or machine: `python -m pip install -r requirements.txt`
+2. Change into the repository directory. If using pip, install requirements from the `pyproject.toml` using `pip install .`
 
 ## Release/Versioning
 

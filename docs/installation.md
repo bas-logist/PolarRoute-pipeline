@@ -27,7 +27,7 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
 > Workstations use a non-bash shell, hence 'activate.csh' instead of 'activate'.
 
 4. **Install requirements into the venv**
-   - Use `python -m pip install -r requirements.txt` or the appropriate method for your favourite environment manager.
+   - If using pip, change into the repository's root and run `pip install .`
 
 5. Create or choose an **installation directory** for your cylc pipelines. This needs to be different from where you've cloned your code.
 
