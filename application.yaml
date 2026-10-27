@@ -36,14 +36,11 @@ application:
         - script: 
             name: data_retrieve_duacs.sh
             depends: data_get_credentials.sh
-        - script:
-            name: data_check_downloads.sh
+        - script: 
+            name: check_active_hours.py
             depends:
             - data_retrieve_amsr.sh
             - data_retrieve_duacs.sh
-        - script: 
-            name: check_active_hours.py
-            depends: data_check_downloads.sh
         - script: 
             name: check_datastore_manifest.py
             depends: check_active_hours.py
