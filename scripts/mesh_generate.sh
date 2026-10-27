@@ -25,8 +25,8 @@ log_directory="${pipeline_directory}/logs"
 # Create the mesh
 echo "Generating $mesh_name mesh"
 create_mesh ${mesh_config} -o ${output_directory}/${mesh_name}/${date}/${output_name} \
-            >> ${log_directory}/${mesh_name}_${date}.out \
-            2>> ${log_directory}/${mesh_name}_${date}.err
+            > >(tee -a ${log_directory}/${mesh_name}_${date}.out) \
+            2> >(tee -a ${log_directory}/${mesh_name}_${date}.err >&2)
 
 # Copy file into most_recent directory to be picked up by next script
 mkdir -p ${pipeline_directory}/outputs/most_recent

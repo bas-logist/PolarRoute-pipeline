@@ -78,48 +78,6 @@ def make_parameter_list(supplied_arguments, valid_date):
     return list_of_parameters
 
 
-def lat_long_geojson(filename, blank_latlong):
-    "Determine Lat/Long boundaries from a geojson file."
-    latlong = blank_latlong
-    latlong['latmin']  = latlong['lonmin'] = 180.0
-    latlong['latmax']  = latlong['lonmax'] = -180.0
-
-    with open(filename, 'r') as f:
-        file_contents = f.read()
-        parsed_json = json.loads(file_contents)
-    
-    try:
-        spatial = parsed_json['features']
-        for a_feature in spatial:
-            sub = a_feature['geometry']['coordinates']
-            for a_sub in sub:
-
-                # Account for format differences
-                if len(a_sub) > 2:
-                    coords = a_sub[0]
-                else:
-                    coords = a_sub
-
-                try:
-                    if float(coords[0]) > latlong['lonmax']:
-                        latlong['lonmax'] = float(coords[0])
-                    if float(coords[0]) < latlong['lonmin']:
-                        latlong['lonmin'] = float(coords[0])
-                    if float(coords[1]) > latlong['latmax']:
-                        latlong['latmax'] = float(coords[1])
-                    if float(coords[1]) < latlong['latmin']:
-                        latlong['latmin'] = float(coords[1])
-
-                except Exception as e:
-                    logger.error("Value(s) missing for Lat/Long: %s", e)
-
-    except Exception as e:
-        logger.info("No Lat/Long boundaries found in %s", filename)
-        latlong = blank_latlong
-    
-    return latlong
-
-
 def lat_long_json(filename, blank_latlong):
     "Determine Lat/Long boundaries from a json file."
     latlong = blank_latlong
@@ -170,7 +128,7 @@ def lat_long_csv(filename, blank_latlong):
 
 def get_lat_long(filename):
     """decompress and open the file then find out if it has lat, long boundaries,
-    this needs to handle csv, json(mesh and route), geojson(mesh and route) which have been zipped with gz"""
+    this needs to handle csv and json(mesh and route) which have been zipped with gz"""
     blank_latlong = {'latmin': 'null',
                      'latmax': 'null',
                      'lonmin': 'null',
@@ -194,8 +152,6 @@ def get_lat_long(filename):
         lat_long = lat_long_csv(new_filename, blank_latlong)
     if new_filename.endswith('.json'):
         lat_long = lat_long_json(new_filename, blank_latlong)
-    if new_filename.endswith('.geojson'):
-        lat_long = lat_long_geojson(new_filename, blank_latlong)
 
     if file_unzipped:
         os.remove(filename.strip('.gz'))
