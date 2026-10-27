@@ -31,8 +31,8 @@ cp $mesh_output $output_directory/
 echo "Simulating $vessel_name vessel for $mesh_name"
 add_vehicle ${vessel_config} ${output_directory}/${mesh_name}.mesh.json \
             -o ${output_directory}/${mesh_name}_${vessel_name}.vessel.json \
-            >> ${log_directory}.out \
-            2>>${log_directory}.err
+            > >(tee -a ${log_directory}.out) \
+            2> >(tee -a ${log_directory}.err >&2)
 
 # Copy output back to most recent folder
 cp ${output_directory}/${mesh_name}_${vessel_name}.vessel.json \
