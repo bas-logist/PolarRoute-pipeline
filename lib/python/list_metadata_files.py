@@ -17,8 +17,6 @@ def create_expected_output_filelist(directory: str,
     expected_files = []
     for region_vessel in regions_vessels:
         expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
-                              {region_vessel["vessel"]}.vessel.geojson")
-        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
                                 {region_vessel["vessel"]}.vessel.json")
         expected_files.append(f"{directory}/amsr_{region_vessel["region"]}\
                               .mesh.json")

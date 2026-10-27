@@ -12,13 +12,7 @@ echo $date
 # Decompress and recompress files to upload directory with unique datetime
 for eachfile in $all_files_to_copy
 do
-    if [[ $eachfile == *".geojson.gz"* ]]; then
-        file_name=${eachfile%".geojson.gz"}
-        echo $file_name.geojson
-        gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.geojson
-        gzip -f ${OUTPUT_DIRECTORY}/${file_name}${date}.geojson
-
-    elif [[ $eachfile == *".json.gz"* ]]; then
+    if [[ $eachfile == *".json.gz"* ]]; then
         file_name=${eachfile%".json.gz"}
         echo $file_name.json
         gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.json
@@ -38,13 +32,7 @@ done
 echo "Correcting unique filenames in metadata yaml"
 for eachfile in $all_files_to_copy
 do
-    if [[ $eachfile == *".geojson.gz"* ]]; then
-        file_name=${eachfile%".geojson.gz"}
-        echo $file_name${date}.geojson
-        replace_command='s/'${file_name}'.geojson/'${file_name}${date}'.geojson/g'
-        sed -i -e ${replace_command} ${yaml_file}
-
-    elif [[ $eachfile == *".json.gz"* ]]; then
+    if [[ $eachfile == *".json.gz"* ]]; then
         file_name=${eachfile%".json.gz"}
         echo $file_name${date}.json
         replace_command='s/'${file_name}'.json/'${file_name}${date}'.json/g'

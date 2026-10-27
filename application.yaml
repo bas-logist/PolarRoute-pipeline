@@ -36,22 +36,11 @@ application:
         - script: 
             name: data_retrieve_duacs.sh
             depends: data_get_credentials.sh
-#        - script:                             # temporarily deselected
-#            name: data_retrieve_era5_wave.py  # temporarily deselected
-#            depends: logs_management.py       # temporarily deselected
-#        - script:                             # temporarily deselected
-#            name: data_retrieve_era5_wind.py  # temporarily deselected
-#            depends: logs_management.py       # temporarily deselected
-        - script:
-            name: data_check_downloads.sh
+        - script: 
+            name: check_active_hours.py
             depends:
             - data_retrieve_amsr.sh
             - data_retrieve_duacs.sh
-#            - data_retrieve_era5_wave.py      # temporarily deselected
-#            - data_retrieve_era5_wind.py      # temporarily deselected
-        - script: 
-            name: check_active_hours.py
-            depends: data_check_downloads.sh
         - script: 
             name: check_datastore_manifest.py
             depends: check_active_hours.py
@@ -74,37 +63,11 @@ application:
             name: vessel_add_southern.sh
             depends: mesh_generate_southern.sh
         - script: 
-            name: vessel_update_position.sh
-            depends:
-            - mesh_generate_northern.sh
-            - mesh_generate_central.sh
-            - mesh_generate_southern.sh
-        - script: 
-            name: waypoints_build.sh
-            depends: vessel_update_position.sh
-        - script: 
-            name: routes_calculate_southern.sh
-            depends:
-            - vessel_add_southern.sh
-            - waypoints_build.sh
-        - script: 
-            name: mesh_geojson_northern.sh
-            depends: vessel_add_northern.sh
-        - script: 
-            name: mesh_geojson_central.sh
-            depends: vessel_add_central.sh
-        - script: 
-            name: mesh_geojson_southern.sh
-            depends: vessel_add_southern.sh
-        - script: 
-            name: mesh_geojson_split_central.sh
-            depends: mesh_geojson_central.sh
-        - script: 
             name: metadata_generate_all.sh
             depends:
-            - mesh_geojson_northern.sh
-            - mesh_geojson_split_central.sh
-            - mesh_geojson_southern.sh
+            - vessel_add_northern.sh
+            - vessel_add_central.sh
+            - vessel_add_southern.sh
         - script: 
             name: mesh_compress.sh
             depends:
@@ -118,12 +81,6 @@ application:
             - mesh_compress.sh
             - metadata_compress.sh
         - script:
-            name: metadata_siis_all.sh
-            depends: upload_prepare_all.sh
-        - script:
             name: upload_push_all.sh
-            depends: metadata_siis_all.sh
-        # - script:
-        #     name: publish_html.sh # temporarily disabled, installed from: py-meshiphi-geojson2png @ git+https://github.com/matscorse/py-meshiphi-geojson2png.git
-        #     depends: metadata_siis_all.sh
+            depends: upload_prepare_all.sh
 

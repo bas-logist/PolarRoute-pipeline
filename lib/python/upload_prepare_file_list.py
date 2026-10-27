@@ -19,10 +19,6 @@ def main():
     output_filelist = create_expected_output_filelist(INPUT_DIRECTORY, REGIONS_VESSELS, compressed=True)
     output_filelist.append(f"{INPUT_DIRECTORY}/{METADATA_FILENAME}")
 
-    # Remove any central geojson files for some reason
-    # Carried over from original 'upload_prepare_all.sh'
-    output_filelist = [i for i in output_filelist if "central" and "geojson" not in i]
-
     # Clean out already-existing files from this directory
     if os.path.exists(f"{OUTPUT_DIRECTORY}/{OUTPUT_FILENAME}"):
         os.remove(f"{OUTPUT_DIRECTORY}/{OUTPUT_FILENAME}")
