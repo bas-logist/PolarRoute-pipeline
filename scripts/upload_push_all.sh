@@ -19,21 +19,15 @@ push_directory=${PIPELINE_DIRECTORY}/push
 
 # Define specific xfer product directories
 siis_MEVJ_dir="siis.meshiphi-json.s"      # (ME)shiphi with (V)essel (J)SON
-siis_MEVG_dir="siis.meshiphi-geojson.s"   # (ME)shiphi with (V)essel (G)EOJSON
 siis_OPRM_dir="siis.polarroute-meta.y"    # (O)perational (P)olar(R)oute (M)etadata
-siis_metadata_dir="md"                    # SIIS specific metadata files
 
 # Check that all xfer product directories exist
 if !([ -d "$push_directory/$siis_MEVJ_dir" ] && 
-     [ -d "$push_directory/$siis_MEVG_dir" ] && 
-     [ -d "$push_directory/$siis_OPRM_dir" ] &&
-     [ -d "$push_directory/$siis_metadata_dir" ]); then
+     [ -d "$push_directory/$siis_OPRM_dir" ] ); then
     echo Unable to 'push' upload as one or more xfer product directories does not exist
     exit 1
 fi
 
 # Copy files to correct directory dependant on file type
 find $upload_directory/ -name "*.json.gz" -exec cp {} ${push_directory}/${siis_MEVJ_dir}/ \;
-find $upload_directory/ -name "*.geojson.gz" -exec cp {} $push_directory/$siis_MEVG_dir/ \;
 find $upload_directory/ -name "*.yaml.gz" -exec cp {} $push_directory/$siis_OPRM_dir/ \;
-find $upload_directory/ -name "*.json" -exec cp {} $push_directory/$siis_metadata_dir/ \;
