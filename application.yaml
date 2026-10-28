@@ -84,6 +84,6 @@ application:
             name: upload_push_all.sh
             depends: upload_prepare_all.sh
         - script:
-            name: upload_s3.sh
+            name: upload_s3.py
             depends: metadata_siis_all.sh
 
