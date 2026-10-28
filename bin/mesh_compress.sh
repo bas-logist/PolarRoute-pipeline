@@ -3,4 +3,6 @@
 set -e
 
 # Compress all files in specified folder
-gzip -f ${INPUT_DIRECTORY}/*.json
+if [ -f ${INPUT_DIRECTORY}/*.json ]; then
+    gzip -k -f ${INPUT_DIRECTORY}/*.json
+fi

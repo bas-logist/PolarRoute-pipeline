@@ -43,7 +43,8 @@
                 {% endif %}
                 metadata_get_list_of_files_{{ RV["region"] }}_{{ RV["vessel"] }} =>
             {% endfor %}
-            metadata_generate_all => mesh_compress & metadata_compress => \
+            metadata_make_single_file_list => metadata_generate_all => \
+            mesh_compress & metadata_compress => \
             upload_prepare_file_list => clear_staging => send_to_staging => \
             upload_push_all
             """
@@ -111,7 +112,7 @@
             DIRECTORY = "${CHECKPOINT}"
             REGION = "{{ RV["region"] }}"
             VESSEL = "{{ RV["vessel"] }}"
-            COMPRESSED = True
+            COMPRESSED = False
             OUTPUT_FULLPATH = "${CHECKPOINT}/{{ RV["region"] }}_{{ RV["vessel"] }}_needing_metadata.txt"
 {% endfor %}
 [[metadata_make_single_file_list]]
@@ -134,7 +135,7 @@
 [[mesh_compress]]
     script = "mesh_compress.sh"
     [[[environment]]]
-        INPUT_DIRECTORY = "${STAGING}"
+        INPUT_DIRECTORY = "${CHECKPOINT}"
 [[metadata_compress]]
     script = "metadata_compress.sh"
     [[[environment]]]

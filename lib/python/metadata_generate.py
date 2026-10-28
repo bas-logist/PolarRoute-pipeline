@@ -21,7 +21,8 @@ VERSION = os.getenv("METADATA_VERSION")
 TARGET_FILE = os.getenv("TARGET_FILE_FULLPATH")
 OUTPUT_DIRECTORY = os.getenv("OUTPUT_DIRECTORY")
 OUTPUT_FILENAME = os.getenv("OUTPUT_FILENAME")
-ECHO_SHELL = os.getenv("ECHO_SHELL")
+# this will be string not bool
+ECHO_SHELL = os.getenv("ECHO_SHELL").upper()
 
 USER = os.getenv("CYLC_WORKFLOW_OWNER")
 MESHIPHI_VERSION = meshiphi.__version__
@@ -161,7 +162,7 @@ def build_records(filenames, parameters, valid_date):
                         (os.path.getctime(a_file)), "%Y%m%dT%H%M%S")
                 else:
                     param_dict[a_param] = valid_date
-            
+
             elif a_param == 'created':
                 param_dict[a_param] = datetime.strftime \
                     (datetime.fromtimestamp \
@@ -183,7 +184,8 @@ def build_records(filenames, parameters, valid_date):
     return record_content
 
 
-def generate_output(filenames, parameters, is_echoed, valid_date, output_directory, outfilename):
+def generate_output(filenames: list, parameters: tuple, is_echoed: str, valid_date: str,
+                    output_directory: str, outfilename: str):
     "for each file in the list generate the metadata and write to outfile or shell"
     logger.info("Generating metadata output")
 
@@ -201,11 +203,11 @@ def generate_output(filenames, parameters, is_echoed, valid_date, output_directo
     
     #print(yaml.dump(yaml_content, sort_keys=False, width=4000))
 
-    if is_echoed:
+    if is_echoed == "TRUE":
         # only output to shell
         print(yaml.dump(yaml_content, sort_keys=False, width=4000, indent=4))
     else:
-        outfile = output_directory + outfilename
+        outfile = output_directory + "/" + outfilename
         logger.info("Creating file: %s", str(outfile))
         try:
             with open(outfile, "w") as f:
@@ -232,7 +234,7 @@ def main():
     # set the valid_date to the current date for now
     valid_date = datetime.strftime(datetime.now(), "%Y%m%dT%H%M%S")
 
-    if ECHO_SHELL:
+    if ECHO_SHELL == "TRUE":
         # If the purpose is to send the yaml to the shell then dont
         # pollute the shell with logger information
         logger.disabled = True

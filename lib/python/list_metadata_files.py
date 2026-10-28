@@ -3,13 +3,13 @@ import os
 DIRECTORY = os.getenv("DIRECTORY")
 REGION = os.getenv("REGION")
 VESSEL = os.getenv("VESSEL")
-COMPRESSED = os.getenv("COMPRESSED")
+COMPRESSED = os.getenv("COMPRESSED").upper()
 OUTPUT_FULLPATH = os.getenv("OUTPUT_FULLPATH")
 
 def create_expected_output_filelist(directory: str, 
                                     region: str,
                                     vessel: str,
-                                    compressed: bool):
+                                    compressed: str):
     """
     Create a list of expected output files,
     which we want to gather metadata from.
@@ -24,7 +24,8 @@ def create_expected_output_filelist(directory: str,
     expected_files = list(set(expected_files))
 
     # make compressed if option set
-    if compressed:
+    # cylc doesn't do well with providing booleans from environment, hence string comparison
+    if compressed == "TRUE":
         expected_files = [i + ".gz" for i in expected_files]
     return expected_files
 
