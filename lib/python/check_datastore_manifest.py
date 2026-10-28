@@ -23,8 +23,6 @@ if DATASTORE_MANIFEST_DEPTH is None:
 
 # Determine of the datastore has been updated with new files
 directories_to_check = [['currents', 'duacs-nrt', 'global'],
-#                        ['wave'    , 'era5'     , 'daily'],  # temporarily removed
-#                        ['wind'    , 'era5'     , 'daily'],  # temporarily removed
                         ['sic'     , 'amsr2'    , 'north'],
                         ['sic'     , 'amsr2'    , 'south']]
 

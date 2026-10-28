@@ -65,17 +65,7 @@ If you're on a platform that doesn't have cylc installed on it, you can set thin
 
 
 ## Setting up download credentials
-PolarRoute-pipeline will need to use valid credentials to download ERA5 and DUACS products, ensure you have these set up as detailed below:
-
-### ERA5
-The ERA5 downloader scripts make use of the CDS API (via the cdsapi python package) and require you to create a .cdsapirc file in your home directory ($HOME/.cdsapirc) containing a valid url and key for the API as described here: https://cds.climate.copernicus.eu/api-how-to  
-
-From a shell:
-``` bash
-echo url: https://cds-beta.climate.copernicus.eu/api > $HOME/.cdsapirc
-echo key: <your-unique-api-key> >> $HOME/.cdsapirc
-echo verify:0 >> $HOME/.cdsapirc
-```
+PolarRoute-pipeline will need to use valid credentials to download DUACS products, ensure you have these set up as detailed below:
 
 ### Copernicus Marine API
 The Copernicus API to is used to download up-to-date DUACS currents data. This service requires obtaining a USERNAME and PASSWORD for logging in. Once you have the username and password they can be stored separately to the pipeline in the user's `HOME` directory. You can register on the [Copernicus Marine API Registration](https://data.marine.copernicus.eu/register) page.
