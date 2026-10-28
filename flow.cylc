@@ -21,31 +21,31 @@
 [scheduling]
     [[graph]]
         R1 = """
-        # validate the set file options first - fail early where possible
-        {% if not SKIP_OPTION in ["region", "vessel", "none"] %}
-            {{ raise("Invalid value of set-file SKIP_OPTION: " + str(SKIP_OPTION)) }}
-        {% endif %}
-        {% for RV in REGIONS_VESSELS %}
-            {% if "vessel" not in RV or "region" not in RV %}
-                {{ raise("Required keys missing from set-file REGIONS_VESSELS: each dictionary needs vessel and region") }}
+            # validate the set file options first - fail early where possible
+            {% if not SKIP_OPTION in ["region", "vessel", "none"] %}
+                {{ raise("Invalid value of set-file SKIP_OPTION: " + str(SKIP_OPTION)) }}
             {% endif %}
-        {% endfor %}
-        # run the body of the pipeline
-        {% for RV in REGIONS_VESSELS %}
-            {% if SKIP_OPTION != "vessel" %}
-                {% if SKIP_OPTION != "region" %}
-                    create_output_directories =>
-                    data_get_credentials => data_retrieve_duacs => data_subset_duacs
-                    data_subset_duacs & data_retrieve_amsr => \
-                    check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
+            {% for RV in REGIONS_VESSELS %}
+                {% if "vessel" not in RV or "region" not in RV %}
+                    {{ raise("Required keys missing from set-file REGIONS_VESSELS: each dictionary needs vessel and region") }}
                 {% endif %}
-                vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
-            {% endif %}
-        {% endfor %}
-        metadata_get_list_of_files =>
-        metadata_generate_all => mesh_compress & metadata_compress => \
-        upload_prepare_file_list => clear_staging => send_to_staging => \
-        upload_push_all
+            {% endfor %}
+            # run the body of the pipeline
+            {% for RV in REGIONS_VESSELS %}
+                {% if SKIP_OPTION != "vessel" %}
+                    {% if SKIP_OPTION != "region" %}
+                        create_output_directories =>
+                        data_get_credentials => data_retrieve_duacs => data_subset_duacs
+                        data_subset_duacs & data_retrieve_amsr => \
+                        check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
+                    {% endif %}
+                    vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
+                {% endif %}
+                metadata_get_list_of_files_{{ RV["region"] }}_{{ RV["vessel"] }} =>
+            {% endfor %}
+            metadata_generate_all => mesh_compress & metadata_compress => \
+            upload_prepare_file_list => clear_staging => send_to_staging => \
+            upload_push_all
             """
 [runtime]
     [[validate_set_file_options]]
@@ -105,21 +105,29 @@
             OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
             OUTPUT_FILENAME = "amsr_{{ RV["region"] }}_{{ RV["vessel"] }}.vessel.json"
             CHECKPOINT_DIRECTORY = "${CHECKPOINT}"
+    [[ metadata_get_list_of_files_{{ RV["region"] }}_{{ RV["vessel"] }} ]]
+        script = ${PYTHON_PATH} -c 'import list_metadata_files; list_metadata_files.main()'
+        [[[environment]]]
+            DIRECTORY = "${CHECKPOINT}"
+            REGION = "{{ RV["region"] }}"
+            VESSEL = "{{ RV["vessel"] }}"
+            COMPRESSED = True
+            OUTPUT_FULL_PATH = "${CHECKPOINT}/{{ RV["region"] }}_{{ RV["vessel"] }}_needing_metadata.txt"
 {% endfor %}
-[[metadata_get_list_of_files]]
-    script = ${PYTHON_PATH} -c 'import list_metadata_files; list_metadata_files.main()'
+[[metadata_make_single_file_list]]
+    script = concat_metadata_file_lists.sh
     [[[environment]]]
-        DIRECTORY = "${CHECKPOINT}"
-        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
-        COMPRESSED = True
-        OUTPUT_FULL_PATH = "${CHECKPOINT}/files_needing_metadata.txt"
+        TARGET_FILE_DIRECTORY = "${CHECKPOINT}"
+        MATCH_STRING = "*_needing_metadata.txt"
+        OUTPUT_DIRECTORY = "${CHECKPOINT}"
+        OUTPUT_FILENAME = "files_needing_metadata.txt"
 [[metadata_generate_all]]
     # used to be called from the 'make_file_list' shell script like so:
     # python $scripts_directory/$script -dmisl big_string_of_file_names
-    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate.main('target_file_list=${TARGET_FILE_LIST})'
+    script = ${PYTHON_PATH} -c 'import metadata_generate; metadata_generate.main()'
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
-        TARGET_FILE_LIST = "${CHECKPOINT}/files_needing_metadata.txt"
+        TARGET_FILE_FULLPATH = "${CHECKPOINT}/files_needing_metadata.txt"
         TARGET_FILE_DIRECTORY = "${CHECKPOINT}"
         OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
 [[mesh_compress]]

@@ -1,12 +1,14 @@
 import os
 
 DIRECTORY = os.getenv("DIRECTORY")
-REGIONS_VESSELS = os.getenv("REGIONS_VESSELS")
+REGION = os.getenv("REGION")
+VESSEL = os.getenv("VESSEL")
 COMPRESSED = os.getenv("COMPRESSED")
 OUTPUT_FULLPATH = os.getenv("OUTPUT_FULLPATH")
 
 def create_expected_output_filelist(directory: str, 
-                                    regions_vessels: list[dict],
+                                    region: str,
+                                    vessel: str,
                                     compressed: bool):
     """
     Create a list of expected output files,
@@ -15,11 +17,8 @@ def create_expected_output_filelist(directory: str,
     the format: {"region": "A", "vessel": "B"}
     """
     expected_files = []
-    for region_vessel in regions_vessels:
-        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}_\
-                                {region_vessel["vessel"]}.vessel.json")
-        expected_files.append(f"{directory}/amsr_{region_vessel["region"]}\
-                              .mesh.json")
+    expected_files.append(f"{directory}/amsr_{region}_{vessel}.vessel.json")
+    expected_files.append(f"{directory}/amsr_{region}.mesh.json")
 
     # chuck out region mesh duplicated filenames
     expected_files = list(set(expected_files))
@@ -31,7 +30,7 @@ def create_expected_output_filelist(directory: str,
 
 
 def main():
-    files_for_metadata = create_expected_output_filelist(DIRECTORY, REGIONS_VESSELS, COMPRESSED)
+    files_for_metadata = create_expected_output_filelist(DIRECTORY, REGION, VESSEL, COMPRESSED)
     with open(OUTPUT_FULLPATH, "w") as output_file:
         output_file.writelines(line + "\n" for line in files_for_metadata)
 
