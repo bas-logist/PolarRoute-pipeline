@@ -60,7 +60,7 @@
         # Ensure the directories we intend to write to, exist already
         script = ${PYTHON_PATH} -c 'import create_output_directories; create_output_directories.main()'
         [[[environment]]]
-            DIRECTORIES = "${DATASTORE},${CHECKPOINT},${HTML},${STAGING}"
+            DIRECTORIES = "${DATASTORE},${CHECKPOINT},${STAGING}"
 {% for RV in REGIONS_VESSELS %}
     [[data_retrieve_amsr]]
         script = data_retrieve_amsr.sh
