@@ -143,10 +143,10 @@
 [[upload_prepare_file_list]]
     script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list.main()'
     [[[environment]]]
-        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        LIST_OF_FILES = "files_needing_metadata.txt"
+        INPUT_DIRECTORY = "${CHECKPOINT}"
         METADATA_FILENAME =  "upload_metadata.yaml.gz"
-        REGIONS_VESSELS = "{{ REGIONS_VESSELS }}"
-        OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        OUTPUT_DIRECTORY = "${CHECKPOINT}"
         OUTPUT_FILENAME = "upload_prepare_file_list.txt"
 [[upload_clear_staging]]
     # Ensure old run material is out of staging area
@@ -156,8 +156,8 @@
 [[send_to_staging]]
     script = "upload_prepare.sh"
     [[[environment]]]
-        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
-        FILE_LIST = "upload_prepare_list.txt"
+        INPUT_DIRECTORY = "${CHECKPOINT}"
+        FILE_LIST = "upload_prepare_file_list.txt"
         OUTPUT_DIRECTORY = "${STAGING}"
 [[upload_push_all]]
     script = "upload_push_all.sh"
