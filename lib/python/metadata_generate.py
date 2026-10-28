@@ -16,11 +16,16 @@ logger = logging.getLogger(__name__)
 # Get relevant environment variables from parent pipeline process
 DESCRIPTION = "Metadata file used for data transfer of files in Operational PolarRoute project"
 
+
 VERSION = os.getenv("METADATA_VERSION")
-REGIONS_VESSELS = os.getenv("REGIONS_VESSELS")
+TARGET_FILE = os.getenv("TARGET_FILE_FULLPATH")
 OUTPUT_DIRECTORY = os.getenv("OUTPUT_DIRECTORY")
+OUTPUT_FILENAME = os.getenv("OUTPUT_FILENAME")
+ECHO_SHELL = os.getenv("ECHO_SHELL")
+
 USER = os.getenv("CYLC_WORKFLOW_OWNER")
 MESHIPHI_VERSION = meshiphi.__version__
+
 
 def md5(filename):
     """
@@ -40,19 +45,6 @@ def get_meshiphi_version(filename):
     """
     return MESHIPHI_VERSION
 
-def check_input_filenames(input_filenames: list):
-    """from the cli arguments create a list of which files require inclusion in the YAML metadata file.
-    then make sure all the files exist"""
-    list_of_filenames_that_actually_exist = []
-
-    for a_filename in input_filenames:
-        if not os.path.isfile(a_filename):
-            logger.warning("Filename %s is not a file (or doesn't exist): Ignoring", a_filename)
-        else:
-            list_of_filenames_that_actually_exist.append(os.path.abspath(a_filename))
-            logger.info("Including filename: %s", a_filename)
-
-    return list_of_filenames_that_actually_exist
 
 def make_parameter_list(arguments: dict, valid_date):
     "from the cli options create a list of which metadata variables to generate."
@@ -191,7 +183,7 @@ def build_records(filenames, parameters, valid_date):
     return record_content
 
 
-def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
+def generate_output(filenames, parameters, is_echoed, valid_date, output_directory, outfilename):
     "for each file in the list generate the metadata and write to outfile or shell"
     logger.info("Generating metadata output")
 
@@ -213,7 +205,7 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
         # only output to shell
         print(yaml.dump(yaml_content, sort_keys=False, width=4000, indent=4))
     else:
-        outfile = OUTPUT_DIRECTORY + outfilename
+        outfile = output_directory + outfilename
         logger.info("Creating file: %s", str(outfile))
         try:
             with open(outfile, "w") as f:
@@ -225,8 +217,7 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
 
 def read_input_list_to_file(file_name: str):
     """
-    Just open an input list file,
-    and return the contents as a list-of-lines.
+    Read an input list file, and return the contents as a list-of-filepaths.
     """
     lines = []
     with open(file_name) as f:
@@ -234,42 +225,14 @@ def read_input_list_to_file(file_name: str):
             lines.append(line.strip())
     return lines
 
-
-def get_args():
-    """
-    Argument parsing
-    """
-    parser = argparse.ArgumentParser(description='Create metadata file for specified file(s)')
-    parser.add_argument("-t", help="Text file containing the fullpaths to "
-                        "files we want metadata for, each on its own line",
-                        action="store", dest="target_file_list", default=None)
-    parser.add_argument("-d", help="Include file created date and time",
-                        action="store_true", dest='created', default=False)
-    parser.add_argument("-s", help="Include file size", action="store_true",
-                        dest='size', default=False)
-    parser.add_argument("-m", help="Include file md5sum", action="store_true",
-                        dest='md5', default=False)
-    parser.add_argument("-i", help="Include file meshiphi version", action="store_true",
-                        dest='meshiphi', default=False)
-    parser.add_argument("-l", help="Include lat/long boundaries", action="store_true",
-                        dest='latlong', default=False)
-    parser.add_argument("-e", help="Echo the metadata to shell rather than saving to file",
-                        action="store_true", dest='echo_shell', default=False)
-    parser.add_argument("--outfile", help="Override default and specify output filename",
-                        action="store", dest='outfile', default="upload_metadata.yaml")
-    parser.add_argument("--valid_date", help="Supply, for inclusion datetime (string) for " \
-                        "which the data is valid.", action="store", dest='valid')
-    return parser.parse_args()
-
-
-def main(target_file_list, created, size, md5, meshiphi, latlong, echo_shell,
-         outfile, files, **kwargs):
+def main():
     """
     Metadata creation entry point
     """
-    valid_date = kwargs.get("valid_date", None)
+    # set the valid_date to the current date for now
+    valid_date = datetime.strftime(datetime.now(), "%Y%m%dT%H%M%S")
 
-    if echo_shell:
+    if ECHO_SHELL:
         # If the purpose is to send the yaml to the shell then dont
         # pollute the shell with logger information
         logger.disabled = True
@@ -281,28 +244,14 @@ def main(target_file_list, created, size, md5, meshiphi, latlong, echo_shell,
         # use null instead of None for the YAML
         valid_date = 'null'
 
-    target_file_list = read_input_list_to_file(target_file_list)
-    checked_files = check_input_filenames(target_file_list)
+    target_file_list = read_input_list_to_file(TARGET_FILE)
     parameter_list = make_parameter_list(
         {
-            "created": created,
-            "size": size,
+            "created": True,
+            "size": True,
             "md5": md5,
             "meshiphi": meshiphi,
-            "latlong": latlong
+            "latlong": True
         }, valid_date)
-    generate_output(checked_files, parameter_list, echo_shell, valid_date,
-                    outfile)  
-
-
-if __name__ == "__main__":
-    """
-    If the script is being called with command line arguments, rather than
-    via cylc, use argparse to get the contents.
-    """
-    args = get_args()
-    # note that args.files are passed before args.output and args.valid_date
-    # because it's a bit of a mess with optionals/mandatories/infinite lists
-    # down here
-    main(args.created, args.size, args.md5, args.meshiphi, args.latlong,
-         args.echo_shell, args.target_file_list, args.outfile, args.valid_date)
+    generate_output(target_file_list, parameter_list, ECHO_SHELL, valid_date,
+                    OUTPUT_DIRECTORY, OUTPUT_FILENAME)

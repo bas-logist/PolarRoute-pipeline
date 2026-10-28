@@ -112,7 +112,7 @@
             REGION = "{{ RV["region"] }}"
             VESSEL = "{{ RV["vessel"] }}"
             COMPRESSED = True
-            OUTPUT_FULL_PATH = "${CHECKPOINT}/{{ RV["region"] }}_{{ RV["vessel"] }}_needing_metadata.txt"
+            OUTPUT_FULLPATH = "${CHECKPOINT}/{{ RV["region"] }}_{{ RV["vessel"] }}_needing_metadata.txt"
 {% endfor %}
 [[metadata_make_single_file_list]]
     script = concat_metadata_file_lists.sh
@@ -128,8 +128,9 @@
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
         TARGET_FILE_FULLPATH = "${CHECKPOINT}/files_needing_metadata.txt"
-        TARGET_FILE_DIRECTORY = "${CHECKPOINT}"
         OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        OUTPUT_FILENAME = "upload_metadata.yaml"
+        ECHO_SHELL = False
 [[mesh_compress]]
     script = "mesh_compress.sh"
     [[[environment]]]
