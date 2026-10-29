@@ -75,6 +75,4 @@ Imagine that we have an entirely new HPC system where the queues have different 
 4. Run the cylc pipeline with the new set file.
 
 The bit of `flow.cylc` that loads in the site files is right at the bottom of the document, with a link to the appropriate documentation:
-```
-{% include 'site/' ~ SITE ~ '.cylc' %}
-```
+`{% include 'site/' ~ SITE ~ '.cylc' %}`
