@@ -13,20 +13,20 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-OUTPUT_NAME_DEFAULT = "upload_metadata.yaml"
+# Get relevant environment variables from parent pipeline process
 DESCRIPTION = "Metadata file used for data transfer of files in Operational PolarRoute project"
-VERSION = "0.0.2"
-USER = os.getlogin()
+
+
+VERSION = os.getenv("METADATA_VERSION")
+TARGET_FILE = os.getenv("TARGET_FILE_FULLPATH")
+OUTPUT_DIRECTORY = os.getenv("OUTPUT_DIRECTORY")
+OUTPUT_FILENAME = os.getenv("OUTPUT_FILENAME")
+# this will be string not bool
+ECHO_SHELL = os.getenv("ECHO_SHELL").upper()
+
+USER = os.getenv("CYLC_WORKFLOW_OWNER")
 MESHIPHI_VERSION = meshiphi.__version__
 
-# global holder for valid date, using yaml 'null'
-valid_date = 'null'
-
-# Determine root of pipeline directory
-pipeline_directory = os.getenv("PIPELINE_DIRECTORY")
-
-# Determine the output directory
-output_directory = pipeline_directory + "/outputs/most_recent/"
 
 def md5(filename):
     """
@@ -46,32 +46,17 @@ def get_meshiphi_version(filename):
     """
     return MESHIPHI_VERSION
 
-def check_input_filenames(input_filenames: list):
-    """from the cli arguments create a list of which files require inclusion in the YAML metadata file.
-    then make sure all the files exist"""
-    list_of_filenames_that_actually_exist = []
 
-    for a_filename in input_filenames:
-        if not os.path.isfile(a_filename):
-            logger.warning("Filename %s is not a file (or doesn't exist): Ignoring", a_filename)
-        else:
-            list_of_filenames_that_actually_exist.append(os.path.abspath(a_filename))
-            logger.info("Including filename: %s", a_filename)
-
-    return list_of_filenames_that_actually_exist
-
-def make_parameter_list(supplied_arguments, valid_date):
+def make_parameter_list(arguments: dict, valid_date):
     "from the cli options create a list of which metadata variables to generate."
     list_of_parameters = ["filepath", ]
 
     if valid_date != 'null':
-        list_of_parameters.append("valid")
+        list_of_parameters.append("valid_date")
     
-    arguments = dict(vars(supplied_arguments))
-
-    for an_argument in arguments:
-        if an_argument != "echo" and arguments[an_argument] == True:
-            list_of_parameters.append(str(an_argument))
+    for argument_key, argument_value in arguments.items():
+        if argument_value == True:
+            list_of_parameters.append(argument_key)
     
     logger.info("Including metadata parameters: %s", ' '.join(list_of_parameters))
 
@@ -167,7 +152,7 @@ def build_records(filenames, parameters, valid_date):
         param_dict = dict(blank_params)
 
         for a_param in parameters:
-            if   a_param == 'filepath':
+            if a_param == 'filepath':
                 param_dict[a_param] = a_file
             
             elif a_param == 'valid':
@@ -177,7 +162,7 @@ def build_records(filenames, parameters, valid_date):
                         (os.path.getctime(a_file)), "%Y%m%dT%H%M%S")
                 else:
                     param_dict[a_param] = valid_date
-            
+
             elif a_param == 'created':
                 param_dict[a_param] = datetime.strftime \
                     (datetime.fromtimestamp \
@@ -199,7 +184,8 @@ def build_records(filenames, parameters, valid_date):
     return record_content
 
 
-def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
+def generate_output(filenames: list, parameters: tuple, is_echoed: str, valid_date: str,
+                    output_directory: str, outfilename: str):
     "for each file in the list generate the metadata and write to outfile or shell"
     logger.info("Generating metadata output")
 
@@ -217,11 +203,11 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
     
     #print(yaml.dump(yaml_content, sort_keys=False, width=4000))
 
-    if is_echoed:
+    if is_echoed == "TRUE":
         # only output to shell
         print(yaml.dump(yaml_content, sort_keys=False, width=4000, indent=4))
     else:
-        outfile = output_directory + outfilename
+        outfile = output_directory + "/" + outfilename
         logger.info("Creating file: %s", str(outfile))
         try:
             with open(outfile, "w") as f:
@@ -231,48 +217,43 @@ def generate_output(filenames, parameters, is_echoed, valid_date, outfilename):
             logger.error("Unable to create metadata file due to %s", str(e))
 
 
+def read_input_list_to_file(file_name: str):
+    """
+    Read an input list file, and return the contents as a list-of-filepaths.
+    """
+    lines = []
+    with open(file_name) as f:
+        for line in f:
+            lines.append(line.strip())
+    return lines
 
 def main():
-    """Metadata creation entry point
-    this entry point relies on $PIPELINE_DIRECTORY being available in the environment"""
-        
-    parser = argparse.ArgumentParser(description='Create metadata file for specified file(s)')
-    parser.add_argument("-d", help="Include file created date and time", action="store_true", dest='created', default=False)
-    parser.add_argument("-s", help="Include file size", action="store_true", dest='size', default=False)
-    parser.add_argument("-m", help="Include file md5sum", action="store_true", dest='md5', default=False)
-    parser.add_argument("-i", help="Include file meshiphi version", action="store_true", dest='meshiphi', default=False)
-    parser.add_argument("-l", help="Include lat/long boundaries", action="store_true", dest='latlong', default=False)
-    parser.add_argument("-e", help="Echo the metadata to shell rather than saving to file", action="store_true", dest='echo', default=False)
-    parser.add_argument("--output", help="Override default and specify output filename", action="store", dest='outfile', default=OUTPUT_NAME_DEFAULT)
-    parser.add_argument("--valid-date", help="Supply, for inclusion datetime (string) for which the data is valid.", action="store", dest='valid')
-    parser.add_argument("files", help="One or more files to create metadata for", type=str, nargs='+')
-    args = parser.parse_args()
+    """
+    Metadata creation entry point
+    """
+    # set the valid_date to the current date for now
+    valid_date = datetime.strftime(datetime.now(), "%Y%m%dT%H%M%S")
 
-
-    # Now kick off main
-
-    if args.echo :
+    if ECHO_SHELL == "TRUE":
         # If the purpose is to send the yaml to the shell then dont
         # pollute the shell with logger information
         logger.disabled = True
         logger.info("Echo to shell is enabled, no file will be created")
     
-    if args.valid :
-        valid_date = args.valid
-        logger.info("Supplied valid date is %s", args.valid)
+    if valid_date:
+        logger.info("Supplied valid date is %s", valid_date)
     else:
+        # use null instead of None for the YAML
         valid_date = 'null'
 
-    checked_files = check_input_filenames(args.files)
-    parameter_list = make_parameter_list(args, valid_date)
-    generate_output(checked_files, parameter_list, args.echo, valid_date, args.outfile)
-
-    
-    
-    
-
-    
-
-
-if __name__ == "__main__":
-    main()
+    target_file_list = read_input_list_to_file(TARGET_FILE)
+    parameter_list = make_parameter_list(
+        {
+            "created": True,
+            "size": True,
+            "md5": md5,
+            "meshiphi": meshiphi,
+            "latlong": True
+        }, valid_date)
+    generate_output(target_file_list, parameter_list, ECHO_SHELL, valid_date,
+                    OUTPUT_DIRECTORY, OUTPUT_FILENAME)

@@ -4,18 +4,13 @@
 # to shipside via the siis-data-transfer. Prior to this step, the 'prepare
 # all' step will generate/copy all relevant files to the local 'upload'
 # directory.
-# This script will take the file(s) prepared in the 'upload' directory and
+# This script will take the file(s) prepared in UPLOAD_DIRECTORY and
 # actually copy them into the /data/siis/data/xfer/... directories. In
 # doing so the transfer will be initiated. The siis-data-transfer code will
 # delete files from .../xfer/... once they have been synchronised over to
 # shipside.
 
 set -e
-
-# Get absolute path of the pipeline, upload, and push directories
-pipeline_directory=$PIPELINE_DIRECTORY
-upload_directory=${PIPELINE_DIRECTORY}/upload
-push_directory=${PIPELINE_DIRECTORY}/push
 
 # Define specific xfer product directories
 siis_MEVJ_dir="siis.meshiphi-json.s"      # (ME)shiphi with (V)essel (J)SON
