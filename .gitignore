@@ -31,5 +31,8 @@ html
 # Ignore all env files except the example
 *.env
 
+# Ignore mkdocs output folder
+mkdocs
+
 # IDE things
 .vscode/*

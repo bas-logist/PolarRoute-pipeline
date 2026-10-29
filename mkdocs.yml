@@ -1,5 +1,6 @@
 site_name: PolarRoute-pipeline
 repo_url: https://github.com/bas-logist/PolarRoute-pipeline/
+site_dir: 'mkdocs'
 theme: 
   name: material
   logo: https://cdn.web.bas.ac.uk/bas-style-kit/0.7.3/img/logos-symbols/bas-roundel-inverse-transparent-64.png
@@ -32,15 +33,6 @@ plugins:
   - mkdocstrings
   - include-markdown:
       rewrite_relative_urls: true
-
-markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
 
 nav:
   - Home: index.md

@@ -19,6 +19,7 @@ REGIONS_VESSELS = [{"region": 'south', "vessel": "SDA"}]
 SKIP_OPTION = "vessel"
 ```
 The options:
+
 | Variable name  | Options | Purpose |
 | ------------- | ------------- | ------------- |
 | SITE | String correponding to a file in 'sites' | Used to load appropriate resource settings for your current compute environment. A default one for working on a laptop is 'localhost' |
@@ -55,11 +56,7 @@ You are using a HPC system where the queues have different names and attributes 
 3. Create a new set file to provide at pipeline run time, where the SITE= is set to the unique name of your new system.
 4. Run the cylc pipeline with the new set file.
 
-The bit of `flow.cylc` that loads in the site files is right at the bottom of the document, with a link to the appropriate documentation:
-```
-{% include 'site/' ~ SITE ~ '.cylc' %}
-```
-
+Site file loading in `flow.cylc` is controlled by an 'include' Jinja2 statement at the very bottom of the page.
 
 #### Changes in vessels and regions
 
@@ -70,14 +67,14 @@ The first time you work with a new vessel or region, you would need to make new 
 - (If you had a new region) Create a region file in the `configs/environment_configs` directory, using existing files to guide you.
 
 You'd then set up for the pipeline like so:
+
 1. Create a new set file, specific to the current cruise plan.
 2. Put the following in the set file and save it:
-"""
+```
 SITE = "bas_hpc"
 REGIONS_VESSELS = [{"region": "north", "vessel": "SDA"}, {"region": "south", "vessel": "RC"}]
-"""
-3. Run the cylc pipeline like so: `cylc play PolarRoute-pipeline/<run_number_on_deployment_install> \`
-   `--set-file <wherever_you_saved_the_set_file>/<name_of_new_set_file>`
+```
+3. Run the cylc pipeline like so: `cylc play PolarRoute-pipeline/<run_number_on_deployment_install> --set-file <wherever_you_saved_the_set_file>/<name_of_new_set_file>`
 
 You may of course need to save the set file in an 'official' and documented location for live deployments, for auditability. 
 

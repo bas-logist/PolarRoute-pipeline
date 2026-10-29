@@ -20,6 +20,8 @@ From the three distinct components defined above, this documentation is concerne
 ![Operational PolarRoute Process](img/pipeline_dfd.png)
 
 ## History
+
+### Early 2024
 During 2024 the previous repository was manually ported from a hierarchy of bash and python scripts to an implementation using a workflow manager. The original scripts remained mostly unchanged although the introduction of the [Jug](https://jug.readthedocs.io/en/latest/) parallelisation package allowed the scripts to execute with strict dependency, monitoring and pipeline control. This was initially achieved using a handbuilt workflow manager script `operational-polarroute.py`.  
   
 ### September 2024 to October 2026
