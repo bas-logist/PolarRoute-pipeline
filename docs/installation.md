@@ -4,6 +4,7 @@ It is recommended to use a Python virtual environment to reduce the risk of any 
 
 This pipeline uses the cylc workflow manager: https://cylc.github.io/
 
+
 ## Cloning and setting up installation directories
 
 > [!NOTE]
@@ -32,6 +33,7 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
 > By design, cylc tries to keep development and installed code separate.
 
 
+
 ## Setting up cylc global configurations
 
 You may be able to skip this step if you've set up a different cylc pipeline for HPC before.
@@ -48,14 +50,14 @@ If you're on a platform that doesn't have cylc installed on it, you can set it u
 > By default, cylc will look for 'flow' in a hierarchy of locations including '/etc/cylc/flow/' and your home directory as accessed with '~'. This default behaviour doesn't work well in cases where your home directory is inaccessible to the nodes.
 
 3. Create a `global.cylc` file to store global configurations. There's an `example_global.cylc` file in `PolarRoute-pipeline/flow`. Copy it to the path you set in CYLC_CONF_PATH, and rename the copy to 'global.cylc'. Change it as follows:
-   - Under 'global init-script', replace the value of 'HOME=' to your user space on your computing resource.
-   - Correct the CYLC_RUN_DIR to your local set-up. This should be the same as the path you set up in step 3.
+   - Under 'global init-script', replace the value of 'HOME=' to the path to your user space on your computing resource.
+   - Correct the CYLC_RUN_DIR to the path you set in step 5 of `Cloning and setting up installation directories`, e.g. `/your/home/directory/cylc-run`
    - Replace '<path_to_your_venv>/bin/activate' with your own virtual environment's activation path.
    - Under the section [install] [[symlink_dirs]] [[[slurm_platform]]], set 'run' to match CYLC_RUN_DIR.
 
 4. In the terminal, type `cylc config` and check that the output matches your own global.cylc.
    - If it does, cylc is detecting your configuration.
-   - If it doesn't, check that environment variable $CYLC_CONF_PATH is set correctly.
+   - If it doesn't, check that environment variable $CYLC_CONF_PATH is set correctly and that the global.cylc file is in there.
 
 
 ## Setting up download credentials for downloaded products

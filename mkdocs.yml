@@ -35,9 +35,9 @@ plugins:
 
 nav:
   - Home: index.md
+  - about.md
   - implementation.md
   - installation.md
-  - setting-up.md
   - using.md
   - how-polarroute-pipeline-works.md
   - development.md
