@@ -55,7 +55,10 @@ You are using a HPC system where the queues have different names and attributes 
 3. Create a new set file to provide at pipeline run time, where the SITE= is set to the unique name of your new system.
 4. Run the cylc pipeline with the new set file.
 
-The bit of `flow.cylc` that loads in the site files is right at the bottom of the document, with a link to the appropriate documentation: "{% include 'site/' ~ SITE ~ '.cylc' %}"
+The bit of `flow.cylc` that loads in the site files is right at the bottom of the document, with a link to the appropriate documentation:
+```
+{% include 'site/' ~ SITE ~ '.cylc' %}
+```
 
 
 #### Changes in vessels and regions
