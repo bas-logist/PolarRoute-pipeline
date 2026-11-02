@@ -23,6 +23,17 @@ Please refer to the [Installation] (https://bas-logist.github.io/PolarRoute-pipe
 
 See 'docs/using.md' for instructions on running PolarRoute-pipeline.
 
+## Pushing to S3
+
+To upload mesh products and metadata to an S3 bucket, set the following environment variables:
+
+- `S3_UPLOAD`: `True` (optional, default: False) enables/disables the S3 upload.
+- `S3_BUCKET`: bucket name (required if `S3_UPLOAD` is `True`, default: None)
+- `S3_ENDPOINT`: endpoint url, including prefix (required if `S3_UPLOAD` is `True`, default: None)
+- `S3_KEY`: bucket access key (required if `S3_UPLOAD` is `True`, default: None)
+- `S3_SECRET`: bucket access secret (required if `S3_UPLOAD` is `True`, default: None)
+- `S3_REGION`: bucket aws region (if required?) (required if `S3_UPLOAD` is `True`, default: `"eu-west-2"`)
+- `S3_PREFIX`: prefix to append to filenames, e.g. `meshes` - note that a trailing slash is added automatically.
 
 ## File path design
 
