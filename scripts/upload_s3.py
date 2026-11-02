@@ -18,7 +18,7 @@ S3_PREFIX = os.getenv("S3_PREFIX", None)
 S3_ENDPOINT = os.getenv("S3_ENDPOINT", None)
 S3_KEY = os.getenv("S3_KEY", None)
 S3_SECRET = os.getenv("S3_SECRET", None)
-S3_REGION = os.getenv("S3_REGION", None) # TODO sensible default for this?
+S3_REGION = os.getenv("S3_REGION", "eu-west-2")
 
 def main():
     # check optional dependency is available
@@ -29,7 +29,7 @@ def main():
         endpoint_url=S3_ENDPOINT,
         key=S3_KEY,
         secret=S3_SECRET,
-        client_kwargs={"region_name": S3_REGION}
+        client_kwargs={"region_name": S3_REGION} if S3_REGION else None
     )
 
     logger.info(f"Starting upload using s3fs from '{UPLOAD_DIR}'...\n")
