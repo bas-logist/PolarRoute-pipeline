@@ -5,6 +5,9 @@ logs/*
 inputs/*
 outputs/*
 
+# docs
+site/
+
 # Ignore workflow manager
 /workflow-manager/
 /wfmanager/recent.operational-polarroute/
