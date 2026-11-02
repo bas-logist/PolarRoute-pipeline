@@ -35,7 +35,6 @@ theme:
 
 plugins: 
   - search
-  - mkdocstrings
   - include-markdown:
       rewrite_relative_urls: true
 
