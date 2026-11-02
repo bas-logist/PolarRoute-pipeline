@@ -10,15 +10,24 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def convert_blank_string_to_none(variable_name):
+    """
+    If the user enters blank strings for optional S3 variables in their
+    environment.cylc file, return None.
+    """
+    var = os.getenv(variable_name, None)
+    sanitised_result = var.strip() if var else None
+    return sanitised_result
+
 TARGET_EXTENSIONS = (".json.gz", ".yaml.gz", ".json")
 UPLOAD_DIRECTORY = os.getenv("UPLOAD_DIRECTORY", None)
-S3_BUCKET_NAME = os.getenv("S3_BUCKET", None)
-S3_PREFIX = os.getenv("S3_PREFIX", None)
-S3_ENDPOINT = os.getenv("S3_ENDPOINT", None)
-S3_KEY = os.getenv("S3_KEY", None)
-S3_SECRET = os.getenv("S3_SECRET", None)
-S3_REGION = os.getenv("S3_REGION", "eu-west-2")
-
+S3_BUCKET_NAME = convert_blank_string_to_none("S3_BUCKET")
+S3_PREFIX = convert_blank_string_to_none("S3_PREFIX")
+S3_ENDPOINT = convert_blank_string_to_none("S3_ENDPOINT")
+S3_KEY = convert_blank_string_to_none("S3_KEY")
+S3_SECRET = convert_blank_string_to_none("S3_SECRET")
+S3_REGION = convert_blank_string_to_none("S3_REGION")
 
 def main():
     # check optional dependency is available
