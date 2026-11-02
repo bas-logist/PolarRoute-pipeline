@@ -49,7 +49,6 @@ def main():
                     s3_path = f"{S3_BUCKET_NAME}/{s3_key}"
                 else:
                     s3_path = f"{S3_BUCKET_NAME}/{S3_PREFIX}/{s3_key}"
-
                 try:
                     print(f"Uploading: {filename} -> s3://{s3_path}")
                     fs.put(local_path, s3_path)
