@@ -53,7 +53,7 @@ def main():
                 try:
                     print(f"Uploading: {filename} -> s3://{s3_path}")
                     fs.put(local_path, s3_path)
-                except Exception as e:
+                except Exception as e: #noqa: BLE001
                     print(f"Failed to upload {filename}: {e}")
 
     logger.info("\nScan and upload complete!")
