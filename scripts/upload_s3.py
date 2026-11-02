@@ -20,6 +20,7 @@ S3_KEY = os.getenv("S3_KEY", None)
 S3_SECRET = os.getenv("S3_SECRET", None)
 S3_REGION = os.getenv("S3_REGION", "eu-west-2")
 
+
 def main():
     # check optional dependency is available
     if not s3fs:
