@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 S3_ENV_VAR_NAME = "S3_UPLOAD"
 UPLOAD_DIR = os.path.join(os.getenv("PIPELINE_DIRECTORY"), "upload")
 TARGET_EXTENSIONS = (".json.gz", ".yaml.gz", ".json")
-BUCKET_NAME = os.getenv("S3_BUCKET", None)
+S3_BUCKET_NAME = os.getenv("S3_BUCKET", None)
 S3_PREFIX = os.getenv("S3_PREFIX", None)
 S3_ENDPOINT = os.getenv("S3_ENDPOINT", None)
 S3_KEY = os.getenv("S3_KEY", None)
@@ -45,9 +45,9 @@ def main():
                 s3_key = relative_path.replace(os.sep, "/")
 
                 if S3_PREFIX is None:
-                    s3_path = f"{BUCKET_NAME}/{s3_key}"
+                    s3_path = f"{S3_BUCKET_NAME}/{s3_key}"
                 else:
-                    s3_path = f"{BUCKET_NAME}/{S3_PREFIX}/{s3_key}"
+                    s3_path = f"{S3_BUCKET_NAME}/{S3_PREFIX}/{s3_key}"
                 
                 try:
                     print(f"Uploading: {filename} -> s3://{s3_path}")
