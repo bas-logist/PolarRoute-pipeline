@@ -28,4 +28,4 @@ During 2024 the previous repository was manually ported from a hierarchy of bash
 The workflow manager concept was rebuilt as a separate and generic workflow manager forming the package [simple-action-pipeline](https://github.com/antarctica/simple-action-pipeline). PolarRoute-pipeline was then ported to being a configuration of *simple-action-pipeline*.
 
 ### October 2026
-The workflow manager was switched to [Cylc] (https://cylc.github.io/). This preserves dependency-based scheduling, control, and monitoring, while making it easier to switch configurations between sites and seasons, and benefitting from the larger community supporting this workflow manager.
+The workflow manager was switched to [Cylc] (https://cylc.github.io/). This preserves dependency-based scheduling, control, and monitoring, while making it easier to switch configurations between provisioning sites and seasons, and benefitting from the larger community supporting this workflow manager.

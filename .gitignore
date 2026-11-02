@@ -32,7 +32,7 @@ html
 *.env
 
 # Ignore mkdocs output folder
-mkdocs
+site
 
 # IDE things
 .vscode/*

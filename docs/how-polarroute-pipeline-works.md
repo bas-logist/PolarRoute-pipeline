@@ -44,9 +44,9 @@ Set files are stored in a [set-file](https://github.com/bas-logist/PolarRoute-pi
 
 #### Configuring PolarRoute-pipeline provisioning
 
-Provisioning is separated from tasks, to make the pipeline more portable. Provisioning information is written in a `my_site.cylc` file in the [site](https://github.com/bas-logist/PolarRoute-pipeline/site) directory, where `my_site` is substituted with an appropriate name for your run location - for example, 'bas_hpc' for the BAS HPC, or 'local_defaults' for your personal laptop.
+Provisioning is separated from tasks, to make the pipeline more portable. Provisioning information is written in a `my_site.cylc` file in the [provisioning](https://github.com/bas-logist/PolarRoute-pipeline/provisioning) directory, where `my_site` is substituted with an appropriate name for your run location - for example, 'bas_hpc' for the BAS HPC, or 'local_defaults' for your personal laptop.
 
-When you play the pipeline, you pass a set file (see [set-file](https://github.com/bas-logist/PolarRoute-pipeline/set-files) for examples) which will contain the name of your site. This makes the pipeline load the correct provisioning information for your resource.
+When you play the pipeline, you pass a set file (see [set-file](https://github.com/bas-logist/PolarRoute-pipeline/set-files) for examples) which will contain the name of your provisioning site. This makes the pipeline load the correct information on queues, cores, e.t.c. for your resource.
 
 
 ## Running the pipeline

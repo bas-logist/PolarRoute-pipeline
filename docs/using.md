@@ -22,7 +22,7 @@ The options:
 
 | Variable name  | Options | Purpose |
 | ------------- | ------------- | ------------- |
-| SITE | String correponding to a file in 'sites' | Used to load appropriate resource settings for your current compute environment. A default one for working on a laptop is 'localhost' |
+| SITE | String correponding to a file in 'provisioning' | Used to load appropriate resource settings for your current compute environment. A default one for working on a laptop is 'localhost' |
 | REGIONS_VESSELS  | Python-style list-of-dictionaries, each with keys "region" and "vessel" | Specifies which combinations of regions and vessels the pipeline should be run for |
 | SKIP_OPTION | One of: "none", "region", "vessel" | Whether to run the full pipeline (option "none"), skip the region mesh creation step (option "region"), or skip vessel mesh creation (option "vessel") |
 
@@ -48,9 +48,9 @@ Provided here are some examples to help you configure the pipeline for your need
 
 #### Changes in HPC system
 
-You are using a HPC system where the queues have different names and attributes than the example given in [bas-hpc.cylc](../site/bas-hpc.cylc).
+You are using a HPC system where the queues have different names and attributes than the example given in [bas-hpc.cylc](../provisioning/bas-hpc.cylc).
 
-1. Make a new file under `site`, with a unique name that is sensible for your system. It needs to end in `.cylc`
+1. Make a new file under `provisioning`, with a unique name that is sensible for your system. It needs to end in `.cylc`
 2. Use the existing `bas-hpc.cylc` file, and the documentation on portable workflows (https://cylc.github.io/cylc-doc/stable/html/workflow-design-guide/portable-workflows.html), to fill in your new file.
    - Make sure you encapsulate workflow steps in the Jinja2 {% for REGION_VESSEL in REGIONS_VESSELS %} {% endfor %} block. This will make sure that region/vessel selection flexibility continues to work.
 3. Create a new set file to provide at pipeline run time, where the SITE= is set to the unique name of your new system.

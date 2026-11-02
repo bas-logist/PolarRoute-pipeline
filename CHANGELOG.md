@@ -24,7 +24,7 @@ and this project aims to adhere to [Semantic Versioning](https://semver.org/spec
   - Define the workflow in flow.cylc
   - Move files from `scripts` to cylc-compatible locations
   - Create example `environment.cylc` and `global.cylc` files, for setting configurations and paths
-  - Create files in `site`, for setting resource provisioning on your platform (localhost, Slurm, e.t.c.)
+  - Create files in `provisioning`, for setting resource provisioning on your platform (localhost, Slurm, e.t.c.)
   - Create set-file: this specifies which regions and vessels should be factored into the pipeline, and allows some mesh-creation steps to be skipped if files exist.
   - Change paths in scripts that are now set in the cylc environment
 - Change the README to incorporate installation instructions specific to cylc

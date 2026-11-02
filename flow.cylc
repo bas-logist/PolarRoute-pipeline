@@ -3,7 +3,7 @@
 # Note that 'SITE', 'REGIONS_VESSELS' and 'SKIP_OPTION' are set with a set-file passed at time of play, letting you change deployment
 # configs. See: https://cylc.github.io/cylc-doc/8.0.3/html/user-guide/writing-workflows/jinja2.html#the-s-and-set-file-options 
 
-# SITE lets you select your site for configuration. See: 
+# SITE lets you select your provisioning rules for configuration. See: 
 # https://cylc.github.io/cylc-doc/stable/html/workflow-design-guide/portable-workflows.html
 
 # REGIONS_VESSELS lets you make meshes and calculate routes only for those regions and vessels
@@ -165,5 +165,5 @@
         UPLOAD_DIRECTORY = "${STAGING}"
         PUSH_DIRECTORY = "${PUSH}"
 
-# This fetches site-specific configuration from the matching *.cylc file in the 'site' folder
-{% include 'site/' ~ SITE ~ '.cylc' %}
+# This fetches site-specific configuration from the matching *.cylc file in the 'provisioning' folder
+{% include 'provisioning/' ~ SITE ~ '.cylc' %}
