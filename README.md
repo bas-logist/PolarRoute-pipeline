@@ -98,3 +98,13 @@ Now that everything is set up, the *PolarRoute-pipeline* can be used. Please ref
 # Behind the scenes
 
 For information about how the pipeline works, please refer to the user documentation [How PolarRoute-pipeline works](https://bas-logist.github.io/PolarRoute-pipeline/how-polarroute-pipeline-works).
+
+
+# Building the documentation
+
+To build the documentation,
+
+* Install the documentation dependencies in your virtual environment with `pip install -r requirements-docs.txt`.
+* Use properdocs to serve the dodcs in a development environment with `properdocs serve`
+* Or build the html docs with `properdocs build`.
+* Note that in development only the files in `docs/` need to be edited, github actions are used to automatically build and deploy the documentation.
