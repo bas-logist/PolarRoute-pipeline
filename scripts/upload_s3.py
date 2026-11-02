@@ -20,6 +20,7 @@ S3_KEY = os.getenv("S3_KEY", None)
 S3_SECRET = os.getenv("S3_SECRET", None)
 S3_REGION = os.getenv("S3_REGION", "eu-west-2")
 
+
 def main():
     # check optional dependency is available
     if not s3fs:
@@ -29,7 +30,7 @@ def main():
         endpoint_url=S3_ENDPOINT,
         key=S3_KEY,
         secret=S3_SECRET,
-        client_kwargs={"region_name": S3_REGION} if S3_REGION else None
+        client_kwargs={"region_name": S3_REGION} if S3_REGION else None,
     )
 
     logger.info(f"Starting upload using s3fs from '{UPLOAD_DIR}'...\n")
@@ -39,7 +40,7 @@ def main():
             # Check if the file ends with any of the required extensions
             if filename.lower().endswith(TARGET_EXTENSIONS):
                 local_path = os.path.join(root, filename)
-                
+
                 # Build the target S3 path
                 relative_path = os.path.relpath(local_path, UPLOAD_DIR)
                 s3_key = relative_path.replace(os.sep, "/")
@@ -48,7 +49,7 @@ def main():
                     s3_path = f"{S3_BUCKET_NAME}/{s3_key}"
                 else:
                     s3_path = f"{S3_BUCKET_NAME}/{S3_PREFIX}/{s3_key}"
-                
+
                 try:
                     print(f"Uploading: {filename} -> s3://{s3_path}")
                     fs.put(local_path, s3_path)
