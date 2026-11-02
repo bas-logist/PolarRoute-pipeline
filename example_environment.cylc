@@ -21,11 +21,11 @@
             VESSEL_CONFIGS = "/path/to/vessel/configs"
             # note that static configs will go here, but dynamic configs (e.g. current vessel positions) will nest under outputs
             WAYPOINT_STATIC_CONFIGS = "/path/to/waypoint/configs"
-            # S3 settings if you want the pipeline to upload to S3
-            S3_UPLOAD = False #  enables/disables the S3 upload (optional, default: False)
-            S3_BUCKET = None # bucket name (required if `S3_UPLOAD` is `True`, default: None)
-            S3_ENDPOINT = None # endpoint url, including prefix (required if `S3_UPLOAD` is `True`, default: None)
-            S3_KEY = None # bucket access key (required if `S3_UPLOAD` is `True`, default: None)
-            S3_SECRET = None # bucket access secret (required if `S3_UPLOAD` is `True`, default: None)
-            S3_REGION = None # bucket aws region (required if `S3_UPLOAD` is `True`, default: `"eu-west-2"`)
-            S3_PREFIX = None # prefix to append to filenames, e.g. `meshes` - note that a trailing slash is added automatically.
+            # S3 settings if you want to run the pipeline to upload to S3
+            # Delete them if you aren't using them
+            S3_BUCKET = # bucket name (required if `S3_UPLOAD` is `True`, default: None)
+            S3_ENDPOINT = # endpoint url, including prefix (required if `S3_UPLOAD` is `True`, default: None)
+            S3_KEY = # bucket access key (required if `S3_UPLOAD` is `True`, default: None)
+            S3_SECRET = # bucket access secret (required if `S3_UPLOAD` is `True`, default: None)
+            S3_REGION = # bucket aws region (required if `S3_UPLOAD` is `True`, default: `"eu-west-2"`)
+            S3_PREFIX = # prefix to append to filenames, e.g. `meshes` - note that a trailing slash is added automatically.

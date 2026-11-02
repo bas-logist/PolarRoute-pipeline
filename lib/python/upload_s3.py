@@ -10,9 +10,8 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-S3_ENV_VAR_NAME = "S3_UPLOAD"
-UPLOAD_DIR = os.path.join(os.getenv("PIPELINE_DIRECTORY"), "upload")
 TARGET_EXTENSIONS = (".json.gz", ".yaml.gz", ".json")
+UPLOAD_DIRECTORY = os.getenv("UPLOAD_DIRECTORY", None)
 S3_BUCKET_NAME = os.getenv("S3_BUCKET", None)
 S3_PREFIX = os.getenv("S3_PREFIX", None)
 S3_ENDPOINT = os.getenv("S3_ENDPOINT", None)
@@ -33,16 +32,16 @@ def main():
         client_kwargs={"region_name": S3_REGION} if S3_REGION else None,
     )
 
-    logger.info(f"Starting upload using s3fs from '{UPLOAD_DIR}'...\n")
+    logger.info(f"Starting upload using s3fs from '{UPLOAD_DIRECTORY}'...\n")
 
-    for root, dirs, files in os.walk(UPLOAD_DIR):
+    for root, dirs, files in os.walk(UPLOAD_DIRECTORY):
         for filename in files:
             # Check if the file ends with any of the required extensions
             if filename.lower().endswith(TARGET_EXTENSIONS):
                 local_path = os.path.join(root, filename)
 
                 # Build the target S3 path
-                relative_path = os.path.relpath(local_path, UPLOAD_DIR)
+                relative_path = os.path.relpath(local_path, UPLOAD_DIRECTORY)
                 s3_key = relative_path.replace(os.sep, "/")
 
                 if S3_PREFIX is None:
@@ -60,6 +59,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # proceed if allowed by environment variable
-    if str(os.getenv(S3_ENV_VAR_NAME, None)).lower() == "true":
-        main()
+    main()

@@ -1,6 +1,6 @@
 #!jinja2
 
-# Note that 'SITE', 'REGIONS_VESSELS' and 'SKIP_OPTION' are set with a set-file passed at time of play, letting you change deployment
+# Note that 'SITE', 'REGIONS_VESSELS', 'SKIP_OPTION' and 'S3_UPLOAD' are set with a set-file passed at time of play, letting you change deployment
 # configs. See: https://cylc.github.io/cylc-doc/8.0.3/html/user-guide/writing-workflows/jinja2.html#the-s-and-set-file-options 
 
 # SITE lets you select your provisioning rules for configuration. See: 
@@ -11,6 +11,9 @@
 
 # SKIP_OPTION lets you skip all steps before and including region messel creation (option "region"),
 # all steps before and including vessel mesh creation (option "vessel"), or no steps (option "none")
+
+# S3_UPLOAD will upload the final product files to an S3 bucket if set to 'true', or skip s3 uploads 
+# if set to 'false'. If 'true', you'll need to add additional S3 configuration in environment.cylc
 
 # Separating global variables into 'environment.cylc' lets you more-easily swap between
 # live and test environment variables
@@ -46,7 +49,11 @@
             metadata_make_single_file_list => metadata_generate_all => \
             mesh_compress & metadata_compress => \
             upload_prepare_file_list => clear_staging => send_to_staging => \
-            upload_push_all
+            {% if S3_UPLOAD == "true" %}
+                s3_upload & upload_push_all
+            {% else %}
+                upload_push_all
+            {% endif %}
             """
 [runtime]
     [[validate_set_file_options]]
@@ -159,6 +166,17 @@
         INPUT_DIRECTORY = "${CHECKPOINT}"
         FILE_LIST = "upload_prepare_file_list.txt"
         OUTPUT_DIRECTORY = "${STAGING}"
+[[s3_upload]]
+    script = ${PYTHON_PATH} -c 'import upload_s3; upload_s3.main()'
+    [[[environment]]]
+        # send staging directory files to S3 bucket
+        UPLOAD_DIRECTORY = "${STAGING}"
+        S3_BUCKET = "${S3_BUCKET}"
+        S3_ENDPOINT = "${S3_ENDPOINT}"
+        S3_KEY = "${S3_KEY}"
+        S3_SECRET = "${S3_SECRET}"
+        S3_REGION = "${S3_REGION}"
+        S3_PREFIX = "${S3_PREFIX}"
 [[upload_push_all]]
     script = "upload_push_all.sh"
     [[[environment]]]
