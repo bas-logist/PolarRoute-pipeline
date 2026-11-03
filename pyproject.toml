@@ -10,13 +10,14 @@ dependencies = [
     "copernicusmarine>=2.4.1",
     "cylc-flow>=8.6.6",
     "meshiphi==2.1.13",
-    "mkdocs>=1.6.1",
-    "mkdocs-include-markdown-plugin>=7.3.0",
-    "mkdocs-material==9.6.9",
-    "mkdocstrings>=0.30.1",
-    "polar-route==1.0.0",
+    "polar-route==1.0.0"
 ]
 [project.optional-dependencies]
+docs = [
+    "properdocs",
+    "mkdocs-materialx",
+    "mkdocs-include-markdown-plugin>=7.3.0"
+]
 s3 = [
     "s3fs>=2026.9.0"
 ]
