@@ -60,7 +60,7 @@ Site file loading in `flow.cylc` is controlled by an 'include' Jinja2 statement 
 
 #### Changes in vessels and regions
 
-Imagine it's far into the future and you have 2 boats, the SDA and the Raging Crustacean (RC). The SDA is touring the north and the RC is touring the south this year, with nothing needing information for the central region.
+Imagine it's far into the future and you have 2 boats, the SDA and the Raging Crustacean (RC). The SDA is touring the north and the RC is touring the south this year, with nothing needing information for the central region. You aren't planning to upload results into an S3 bucket.
 
 The first time you work with a new vessel or region, you would need to make new configuration files. As these are stored in the repository, the process is not (yet) fully plug-and-play:
 - Create an RC file in the `configs/vessel_configs` directory, using `SDA.config.json` to guide you.
@@ -73,6 +73,7 @@ You'd then set up for the pipeline like so:
 ```
 SITE = "bas_hpc"
 REGIONS_VESSELS = [{"region": "north", "vessel": "SDA"}, {"region": "south", "vessel": "RC"}]
+S3_UPLOAD = "false"
 ```
 3. Run the cylc pipeline like so: `cylc play PolarRoute-pipeline/<run_number_on_deployment_install> --set-file <wherever_you_saved_the_set_file>/<name_of_new_set_file>`
 
