@@ -5,6 +5,9 @@ logs/*
 inputs/*
 outputs/*
 
+# docs
+site/
+
 # Ignore cylc files that will contain site and user-specific data
 flow/global.cylc
 environment.cylc
@@ -30,9 +33,6 @@ html
 
 # Ignore all env files except the example
 *.env
-
-# Ignore mkdocs output folder
-site
 
 # IDE things
 .vscode/*

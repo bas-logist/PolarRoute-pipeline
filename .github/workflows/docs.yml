@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies 🛠️
         run: uv sync --locked --all-extras --dev
       - name: Build docs 📖
-        run: uv run mkdocs build
+        run: properdocs build
       - name: Deploy docs 🚀
         if: ${{ github.event_name == 'push' }}
         uses: JamesIves/github-pages-deploy-action@v4

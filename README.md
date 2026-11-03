@@ -3,6 +3,7 @@
 PolarRoute-pipeline is a data pipeline used to automate the generation of ocean/sea-ice meshes and optimised routes for ocean vessel route-planning. This data pipeline forms part of the BAS Operational PolarRoute (OPR) project.
 
 User documentation for PolarRoute-pipeline can be found [here](https://bas-logist.github.io/PolarRoute-pipeline/).
+User documentation for PolarRoute-pipeline can be found [here](https://bas-logist.github.io/PolarRoute-pipeline/).
 
 ##  
   
