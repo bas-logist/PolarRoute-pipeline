@@ -2,11 +2,11 @@
 
 *PolarRoute-pipeline* is one of three broadly distinct components of the Operational PolarRoute (OPR) project.
 
-1. **PolarRoute-pipeline ([this repo](https://github.com/bas-amop/PolarRoute-pipeline))**  
-Required data products are downloaded, stored and processed shoreside where the data and compute resources are abundant. This generates ocean/sea-ice meshes (and routes if required) for areas of operational interest. These generated outputs are compressed and transferred via satellite (or other) link to shipside. PolarRoute-pipeline is built on the technologies of [PolarRoute](https://github.com/bas-amop/PolarRoute) and [MeshiPhi](https://github.com/bas-amop/MeshiPhi).
+1. **PolarRoute-pipeline ([this repo](https://github.com/bas-logist/PolarRoute-pipeline))**  
+Required data products are downloaded, stored and processed shoreside where the data and compute resources are abundant. This generates ocean/sea-ice meshes (and routes if required) for areas of operational interest. These generated outputs are compressed and transferred via satellite (or other) link to shipside. PolarRoute-pipeline is built on the technologies of [PolarRoute](https://github.com/bas-logist/PolarRoute) and [MeshiPhi](https://github.com/bas-logist/MeshiPhi).
 
 1. **PolarRoute-server**  
-Once the meshes are available shipside they are ingested into an onboard database which allows them to be used to calculate optimised travel routes. These are calculated on demand and presented to the onboard user digitally. [PolarRoute-server](https://github.com/bas-amop/PolarRoute-server) handles the onboard mesh ingestion and route calculation through a command-line or graphical user interface.
+Once the meshes are available shipside they are ingested into an onboard database which allows them to be used to calculate optimised travel routes. These are calculated on demand and presented to the onboard user digitally. [PolarRoute-server](https://github.com/bas-logist/PolarRoute-server) handles the onboard mesh ingestion and route calculation through a command-line or graphical user interface.
 
 1. **Sea-Ice-Information-System (SIIS)**  
 The [SIIS](https://gitlab.data.bas.ac.uk/MAGIC/SIIS) front-end provides a graphical user interface whereby users can interact with Operational PolarRoute through a standard web browser.

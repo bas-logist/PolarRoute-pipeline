@@ -2,7 +2,7 @@
 
 PolarRoute-pipeline is a data pipeline used to automate the generation of ocean/sea-ice meshes and optimised routes for ocean vessel route-planning. This data pipeline forms part of the BAS Operational PolarRoute (OPR) project.  
 
-User documentation for PolarRoute-pipeline can be found [here](https://bas-amop.github.io/PolarRoute-pipeline/).
+User documentation for PolarRoute-pipeline can be found [here](https://bas-logist.github.io/PolarRoute-pipeline/).
 
 ##  
   
@@ -31,7 +31,7 @@ It is recommended to use a Python virtual environment to reduce the risk of any 
 
 1. **Clone this repository**
     - Assuming you have already cloned this repository into a directory, move into the 'root' of this repository. `cd polarroute-pipeline`.
-    - Otherwise `git clone https://github.com/bas-amop/PolarRoute-pipeline.git polarroute-pipeline`
+    - Otherwise `git clone https://github.com/bas-logist/PolarRoute-pipeline.git polarroute-pipeline`
     - then `cd polarroute-pipeline`
 
 1. **Install requirements**  
@@ -92,7 +92,7 @@ echo <your-unique-password> > $HOME/.copernicusmarine/password
    1. Login
    1. ` cat /dev/null > ~/.bash_history ` *(this will erase all of your bash history)*
 
-Now that everything is set up, the *PolarRoute-pipeline* can be used. Please refer to the [Using the pipeline](https://bas-amop.github.io/PolarRoute-pipeline/using) section of the user documentation for details of how to operate the pipeline.
+Now that everything is set up, the *PolarRoute-pipeline* can be used. Please refer to the [Using the pipeline](https://bas-logist.github.io/PolarRoute-pipeline/using) section of the user documentation for details of how to operate the pipeline.
 
 ## Pushing to S3
 
@@ -108,4 +108,14 @@ To upload mesh products and metadata to an S3 bucket, set the following environm
 
 # Behind the scenes
 
-For information about how the pipeline works, please refer to the user documentation [How PolarRoute-pipeline works](https://bas-amop.github.io/PolarRoute-pipeline/how-polarroute-pipeline-works).
+For information about how the pipeline works, please refer to the user documentation [How PolarRoute-pipeline works](https://bas-logist.github.io/PolarRoute-pipeline/how-polarroute-pipeline-works).
+
+
+# Building the documentation
+
+To build the documentation,
+
+* Install the documentation dependencies in your virtual environment with `pip install -r requirements-docs.txt`.
+* Use properdocs to serve the dodcs in a development environment with `properdocs serve`
+* Or build the html docs with `properdocs build`.
+* Note that in development only the files in `docs/` need to be edited, github actions are used to automatically build and deploy the documentation.

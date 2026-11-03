@@ -2,7 +2,7 @@
 
 *PolarRoute-pipeline* creates one or more meshes using up-to-date source datasets. These meshes can then have optimised routes calculated upon them with optimisations such as fuel or traveltime.  
 
-The logical flow of the pipeline is built from the [application.yaml](https://github.com/bas-amop/PolarRoute-pipeline/raw/main/application.yaml) config file, which details what tasks are to be performed and their dependencies. The pipeline resolves these dependencies and allows tasks to run in parallel, depending how many `WORKERS` have been defined in the [pipeline.yaml](https://github.com/bas-amop/PolarRoute-pipeline/raw/main/pipeline.yaml).  
+The logical flow of the pipeline is built from the [application.yaml](https://github.com/bas-logist/PolarRoute-pipeline/raw/main/application.yaml) config file, which details what tasks are to be performed and their dependencies. The pipeline resolves these dependencies and allows tasks to run in parallel, depending how many `WORKERS` have been defined in the [pipeline.yaml](https://github.com/bas-logist/PolarRoute-pipeline/raw/main/pipeline.yaml).  
 
 If any task fails to complete successfully, it will raise an exception and prevent any future **dependencies** from executing.
 
@@ -33,7 +33,7 @@ Each task (script) in the sequence has a `name:` and `depends:` field. The name 
 
 ***Currently shell scripts `.sh` and python scripts `.py` are the only supported task (script) names.*** 
 
-Inspect the [application.yaml](https://github.com/bas-amop/PolarRoute-pipeline/raw/main/application.yaml) to show how the sequence of tasks can be constructed.  
+Inspect the [application.yaml](https://github.com/bas-logist/PolarRoute-pipeline/raw/main/application.yaml) to show how the sequence of tasks can be constructed.  
 
 ## Logs
 Logs of stderr and stdout are stored in `<pipeline>/logs/<config_name>_<date>.err` and `<pipeline>/logs/<config_name>_<date>.out` for debugging purposes.  

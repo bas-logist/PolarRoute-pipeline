@@ -16,7 +16,7 @@ It is recommended to use a Python virtual environment to reduce the risk of any 
 
 1. **Clone this repository**
     - Assuming you have already cloned this repository into a directory, move into the 'root' of this repository. `cd polarroute-pipeline`.
-    - Otherwise `git clone https://github.com/bas-amop/PolarRoute-pipeline.git polarroute-pipeline`
+    - Otherwise `git clone https://github.com/bas-logist/PolarRoute-pipeline.git polarroute-pipeline`
     - then `cd polarroute-pipeline`
 
 1. **Install requirements**  
