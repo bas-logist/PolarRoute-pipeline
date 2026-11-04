@@ -1,3 +1,0 @@
-properdocs
-mkdocs-materialx
-mkdocs-include-markdown-plugin
