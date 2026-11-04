@@ -12,11 +12,12 @@ First install and set up, following the instructions in the 'installation.md' fi
    - It should give a result like mine: `INSTALLED PolarRoute-pipeline/run1 from /path/to/PolarRoute-pipeline`
    - The install will go into ~ and be SYMLINKED to the `$CYLC_RUN_DIR` you set earlier
 
-4. Create a 'set-file' to specify which `SITE` to use for computation, which `REGIONS_VESSELS` to run the pipeline for, and whether to apply a `SKIP_OPTION`. A set file looks like this:
+4. Create a 'set-file' to specify which SITE to use for computation, which REGIONS_VESSELS to run the pipeline for, whether to apply a SKIP_OPTION, and whether to upload the final output files to S3. A set file looks like this:
 ```
 SITE = "localhost"
 REGIONS_VESSELS = [{"region": 'south', "vessel": "SDA"}]
 SKIP_OPTION = "vessel"
+S3_UPLOAD = "false"
 ```
 The options:
 
@@ -25,6 +26,7 @@ The options:
 | SITE | String correponding to a file in 'provisioning' | Used to load appropriate resource settings for your current compute environment. A default one for working on a laptop is 'localhost' |
 | REGIONS_VESSELS  | Python-style list-of-dictionaries, each with keys "region" and "vessel" | Specifies which combinations of regions and vessels the pipeline should be run for |
 | SKIP_OPTION | One of: "none", "region", "vessel" | Whether to run the full pipeline (option "none"), skip the region mesh creation step (option "region"), or skip vessel mesh creation (option "vessel") |
+| S3_UPLOAD | One of: "true", "false" | Whether to upload final results to an S3 bucket. Note you'll have to ensure all variables beginning 'S3_' in `environment.cylc` have been assigned values  |
 
    - See ['Worked examples of configuration of the PolarRoute-pipeline'](#worked-examples-of-configuration-of-the-polarroute-pipelineworked-examples) for details of how to add or remove vessels and regions.
 

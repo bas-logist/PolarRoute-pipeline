@@ -22,14 +22,13 @@ environment.cylc
 !inputs/.gitkeep
 !outputs/.gitkeep
 
-# Ignore Symlinks
+# Stop users putting datastores/output locations into git, if they're working directly under the project repo
 datastore
-activate
-outputs
 upload
+checkpoint
+outputs
+staging
 push
-logs
-html
 
 # Ignore all env files except the example
 *.env

@@ -1,0 +1,23 @@
+# Ignore anything that isn't needed for the installation
+
+# Documentation and example files - look in the repo instead
+docs
+properdocs.yml
+CHANGELOG.md
+example_environment.cylc
+site
+flow/example_global.cylc
+
+# Configs that should be versioned/controlled from outside cylc-run 
+configs
+
+# Scripts that we're keeping 'for now' that aren't in use
+scripts
+
+# Stop people duplicating their data sources around, if they've put them in their working directory
+datastore
+upload
+checkpoint
+outputs
+staging
+push

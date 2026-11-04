@@ -22,6 +22,8 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
     - E.g. `source <path-to-venv>/bin/activate`
 
 4. **Install requirements into the venv**
+      - If using uv and you don't intend to use S3 buckets: `uv sync` 
+            - To get S3 and documentation libraries, use the `--extra` flag, e.g. `uv sync --extra s3,docs`
       - If using pip, change into the repository's root and run `pip install .`
 
 5. Create or choose an **installation directory** for your cylc pipelines. This needs to be different from where you've cloned your code.
@@ -44,7 +46,7 @@ If you're on a platform that doesn't have cylc installed on it, you can set it u
 1. Create a directory called `flow`, which will contain **cylc global configs**. These configs will apply to **every cylc pipeline** you run. 
       - The `global.cylc` file defines platforms on which the pipeline can be run, under the section [platforms], and symlinks for processes. 
 
-2. Set the environment variable `CYLC_CONF_PATH` to your flow directory, e.g.: `export CYLC_CONF_PATH="/<your_path>/flow"`
+2. Set the environment variable CYLC_CONF_PATH to your flow directory, e.g.: `setenv CYLC_CONF_PATH "/<your_path>/flow"` (csh) or `export CYLC_CONF_PATH="/<your_path>/flow"` (bash)
 
 > [!NOTE]
 > By default, cylc will look for 'flow' in a hierarchy of locations including '/etc/cylc/flow/' and your home directory as accessed with '~'. This default behaviour doesn't work well in cases where your home directory is inaccessible to the nodes.
