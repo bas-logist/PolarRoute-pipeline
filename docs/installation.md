@@ -65,16 +65,19 @@ If you're on a platform that doesn't have cylc installed on it, you can set it u
 ## Setting up download credentials for downloaded products
 
 ### Copernicus Marine API
-The Copernicus API to is used to download up-to-date DUACS currents data. This service requires obtaining a USERNAME and PASSWORD for logging in. Once you have the username and password they can be stored separately to the pipeline in the user's `HOME` directory. You can register on the [Copernicus Marine API Registration](https://data.marine.copernicus.eu/register) page.
+The Copernicus API to is used to download up-to-date DUACS currents data. This service requires obtaining a USERNAME and PASSWORD for logging in. Once you have the username and password they can be stored separately from the pipeline in the user's `HOME` directory. You can register on the [Copernicus Marine API Registration](https://data.marine.copernicus.eu/register) page.
+
+To add your username and password to files:
+
 ``` bash
 mkdir -p $HOME/.copernicusmarine
+# temporarily disable history-logging to keep password out
+set +o history
 echo <your-unique-username> > $HOME/.copernicusmarine/user
 echo <your-unique-password> > $HOME/.copernicusmarine/password
+# switch history logging back on
+set -o history
 ```
- - The above commands will create the required credentials files. If you wish to remove the details of these commands in your shell's history, you can perform the following:  
-   1. Logout *(this will flush your shell history to ~/.bash_history)*
-   1. Login
-   1. ` cat /dev/null > ~/.bash_history ` *(this will erase all of your bash history)*
 
 
 ## Obtaining larger static datasets 
