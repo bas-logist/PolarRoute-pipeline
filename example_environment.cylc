@@ -17,10 +17,10 @@
             COPERNICUS_FILE_USERNAME = "/path/to/.copernicusmarine/user"
             COPERNICUS_FILE_PASSWORD = "/path/to/.copernicusmarine/password"
             # where configs for environments and vessels will be stored.
-            ENVIRONMENTAL_CONFIGS = "/path/to/environment/configs"
-            VESSEL_CONFIGS = "/path/to/vessel/configs"
+            ENVIRONMENTAL_CONFIGS = "/path/to/configs/environment_configs"
+            VESSEL_CONFIGS = "/path/to/configs/vessel_configs"
             # note that static configs will go here, but dynamic configs (e.g. current vessel positions) will nest under outputs
-            WAYPOINT_STATIC_CONFIGS = "/path/to/waypoint/configs"
+            WAYPOINT_STATIC_CONFIGS = "/path/to/configs/waypoint_configs"
             # S3 settings if you want to run the pipeline to upload to S3
             # Delete them if you aren't using them
             S3_BUCKET = # bucket name (required if `S3_UPLOAD` is `True`, default: None)
