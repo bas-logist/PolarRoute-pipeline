@@ -36,8 +36,22 @@ The options:
 
 5. Track the progress of your pipeline like so:
    - `cylc scan --format=rich` will display progress from the point of view of the cylc process.
-   - Check your **slurm queue** to see what jobs have been submitted by the pipeline.
-   - Logs, output files, etc. will all be viewable under: `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber`. The most important ones, like slurm `.out` and `.err`, are in `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber/log/job/<name_of_task>/01`
+   - If using a queueing system like **slurm** or **sge**, use their job-checking commands to check that the pipeline has submitted jobs.
+
+
+
+## Checking output logs
+
+Output logs will all be viewable under: `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
+
+- For 'stdout'/'stderr' format files for each task, see: `/log/job/<name_of_task>/01/job.out` and `/log/job/<name_of_task>/01/job.err`
+
+
+## Stopping and cleaning up the pipeline
+
+To stop the pipeline: `cylc stop <your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
+
+To clean up after the pipeline (note this will delete logs too, so you might want to wait until after troubleshooting): `cylc clean <your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
 
 
 ##
