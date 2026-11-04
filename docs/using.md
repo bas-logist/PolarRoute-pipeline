@@ -10,7 +10,7 @@ First install and set up, following the instructions in the 'installation.md' fi
 
 3. Install the polarroute-pipeline code to your 'run' directory: `cylc install`
    - It should give a result like mine: `INSTALLED PolarRoute-pipeline/run1 from /path/to/PolarRoute-pipeline`
-   - The install will go into ~ and be SYMLINKED to the $CYLC_RUN_DIR you set earlier
+   - The install will go into ~ and be SYMLINKED to the `$CYLC_RUN_DIR` you set earlier
 
 4. Create a 'set-file' to specify which SITE to use for computation, which REGIONS_VESSELS to run the pipeline for, whether to apply a SKIP_OPTION, and whether to upload the final output files to S3. A set file looks like this:
 ```
@@ -28,7 +28,7 @@ The options:
 | SKIP_OPTION | One of: "none", "region", "vessel" | Whether to run the full pipeline (option "none"), skip the region mesh creation step (option "region"), or skip vessel mesh creation (option "vessel") |
 | S3_UPLOAD | One of: "true", "false" | Whether to upload final results to an S3 bucket. Note you'll have to ensure all variables beginning 'S3_' in `environment.cylc` have been assigned values  |
 
-   - See 'Worked examples of configuration of the PolarRoute-pipeline' for details of how to add or remove vessels and regions.
+   - See ['Worked examples of configuration of the PolarRoute-pipeline'](#worked-examples-of-configuration-of-the-polarroute-pipelineworked-examples) for details of how to add or remove vessels and regions.
 
 4. Run the pipeline with your set file:
    - `cylc play PolarRoute-pipeline/<run_number_at_install> \`
@@ -36,20 +36,8 @@ The options:
 
 5. Track the progress of your pipeline like so:
    - `cylc scan --format=rich` will display progress from the point of view of the cylc process.
-   - If using a queueing system such as **slurm**, you can check the queue to see what jobs have been submitted by the pipeline.
-
-
-## Checking output logs
-
-Output logs will all be viewable under: `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
-- For 'stdout'/'stderr' format files for each task, see: `/log/job/<name_of_task>/01/job.out` and `/log/job/<name_of_task>/01/job.err`
-
-
-## Stopping and cleaning up the pipeline
-
-To stop the pipeline: `cylc stop <your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
-
-To clean up after the pipeline (note this will delete logs too, so you might want to wait until after troubleshooting): `cylc clean <your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
+   - Check your **slurm queue** to see what jobs have been submitted by the pipeline.
+   - Logs, output files, etc. will all be viewable under: `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber`. The most important ones, like slurm `.out` and `.err`, are in `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber/log/job/<name_of_task>/01`
 
 
 ##

@@ -1,6 +1,6 @@
 [project]
 name = "polarroute-pipeline"
-version = "1.0.0"
+version = "3.0.0"
 description = "A data pipeline to automate ocean/sea ice mesh generation, for optimised vessel routes"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -9,15 +9,17 @@ dependencies = [
     "certifi==2026.10.19",
     "copernicusmarine>=2.4.1",
     "cylc-flow>=8.6.6",
-    "meshiphi==2.1.13",
-    "polar-route==1.0.0"
+    "meshiphi",
+    "polar-route==1.2.0"
 ]
 [project.optional-dependencies]
+s3 = [
+    "s3fs>=2026.9.0"
+]
+
+[dependency-groups]
 docs = [
     "properdocs",
     "mkdocs-materialx",
     "mkdocs-include-markdown-plugin>=7.3.0"
-]
-s3 = [
-    "s3fs>=2026.9.0"
 ]
