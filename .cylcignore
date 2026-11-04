@@ -13,3 +13,11 @@ configs
 
 # Scripts that we're keeping 'for now' that aren't in use
 scripts
+
+# Stop people duplicating their data sources around, if they've put them in their working directory
+datastore
+upload
+checkpoint
+outputs
+staging
+push
