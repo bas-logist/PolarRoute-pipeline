@@ -26,9 +26,9 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
             - To get S3 and documentation libraries, use the `--extra` flag, e.g. `uv sync --extra s3,docs`
       - If using pip, change into the repository's root and run `pip install .`
 
-5. Create or choose an **installation directory** for your cylc pipelines. This needs to be different from where you've cloned your code.
+5. **Create or choose an installation directory for your cylc pipelines**
       - Before you run a cylc-pipeline for the first time, you run `cylc install` on the code repository, which installs it to: `your-installation-directory/cylc-run`.
-      - For a test run, your home directory is usually fine, as long as it's accessible to your planned compute resources.
+      - The default installation location is `~/cylc-run`. If this location is acceptable to you and accessible to your compute resources, you don't need to take further action. Otherwise, you will want to identify an installation location that makes sense for your compute, such as your userspace on a cluster.
       - For production, you should probably use the same installation location for every cylc pipeline.
 
 > [!NOTE]
