@@ -30,9 +30,10 @@ The options:
 
    - See ['Worked examples of configuration of the PolarRoute-pipeline'](#worked-examples-of-configuration-of-the-polarroute-pipelineworked-examples) for details of how to add or remove vessels and regions.
 
-4. Run the pipeline with your set file:
-   - `cylc play PolarRoute-pipeline/<run_number_at_install> \`
+4. Run your **latest** installation of the pipeline with your set file:
+   - `cylc play PolarRoute-pipeline/runN \`
    `--set-file <fullpath-to-your-selected-set-file>`
+   - To set a specific installation, use the appropriate identifier instead of `runN` in the command above, e.g. `run5`. You can see current installations under your `cylc-run` directory.
 
 5. Track the progress of your pipeline like so:
    - `cylc scan --format=rich` will display progress from the point of view of the cylc process.
