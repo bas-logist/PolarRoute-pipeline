@@ -8,7 +8,7 @@ First install and set up, following the instructions in the 'installation.md' fi
 
 2. Navigate to the polarroute-pipeline directory.
 
-3. Install the polarroute-pipeline code to your 'run' directory: `cylc install`
+3. Install the polarroute-pipeline code to your 'run' directory: `cylc install -v`
    - It should give a result like mine: `INSTALLED PolarRoute-pipeline/run1 from /path/to/PolarRoute-pipeline`
    - The install will go into ~ and be SYMLINKED to the `$CYLC_RUN_DIR` you set earlier
 

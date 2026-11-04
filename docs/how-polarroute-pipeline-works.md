@@ -52,7 +52,7 @@ When you play the pipeline, you pass a set file (see [set-file](https://github.c
 ## Running the pipeline
 
 - Activate your virtual environment first. `uv` is recommended and a `uv.lock` file is provided.
-- Run `cylc install` in the cloned repository directory, to install your pipeline to the location set in the cylc global configuration. Note the run number assigned to this install, e.g. PolarRoute-pipeline/run1
+- Run `cylc install -v` in the cloned repository directory, to install your pipeline to the location set in the cylc global configuration. Note the run number assigned to this install, e.g. PolarRoute-pipeline/run1
 - To run the installed pipeline with a set file, use the following command, substituting the run number and the set file name for correct ones: `cylc play PolarRoute-pipeline/run1 --set-file /path/to/set/file`
 - `cylc scan` will briefly show pipelines that are running. `cylc scan --format=rich` is more verbose.
 - If running on a slurm queue, use `squeue -u your_username` to see which jobs are currently running.
