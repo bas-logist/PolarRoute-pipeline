@@ -25,7 +25,7 @@ This pipeline uses the cylc workflow manager: https://cylc.github.io/
       - If using pip, change into the repository's root and run `pip install .`
 
 5. Create or choose an **installation directory** for your cylc pipelines. This needs to be different from where you've cloned your code.
-      - Before you run a cylc-pipeline for the first time, you run 'cylc install' on the code repository, which installs it to: your-installation-directory/cylc-run.
+      - Before you run a cylc-pipeline for the first time, you run `cylc install` on the code repository, which installs it to: `your-installation-directory/cylc-run`.
       - For a test run, your home directory is usually fine, as long as it's accessible to your planned compute resources.
       - For production, you should probably use the same installation location for every cylc pipeline.
 
@@ -41,23 +41,23 @@ If you are using a HPC such as JASMIN, cylc may be configured on there already. 
 
 If you're on a platform that doesn't have cylc installed on it, you can set it up like so:
 
-1. Create a directory called 'flow', which will contain **cylc global configs**. These configs will apply to **every cylc pipeline** you run. 
-      - The 'global.cylc' file defines platforms on which the pipeline can be run, under the section [platforms], and symlinks for processes. 
+1. Create a directory called `flow`, which will contain **cylc global configs**. These configs will apply to **every cylc pipeline** you run. 
+      - The `global.cylc` file defines platforms on which the pipeline can be run, under the section [platforms], and symlinks for processes. 
 
-2. Set the environment variable CYLC_CONF_PATH to your flow directory, e.g.: `setenv CYLC_CONF_PATH "/<your_path>/flow"`
+2. Set the environment variable `CYLC_CONF_PATH` to your flow directory, e.g.: `export CYLC_CONF_PATH="/<your_path>/flow"`
 
 > [!NOTE]
 > By default, cylc will look for 'flow' in a hierarchy of locations including '/etc/cylc/flow/' and your home directory as accessed with '~'. This default behaviour doesn't work well in cases where your home directory is inaccessible to the nodes.
 
-3. Create a `global.cylc` file to store global configurations. There's an `example_global.cylc` file in `PolarRoute-pipeline/flow`. Copy it to the path you set in CYLC_CONF_PATH, and rename the copy to 'global.cylc'. Change it as follows:
-      - Under 'global init-script', replace the value of 'HOME=' to the path to your user space on your computing resource.
-      - Correct the CYLC_RUN_DIR to the path you set in step 5 of `Cloning and setting up installation directories`, e.g. `/your/home/directory/cylc-run`
-      - Replace '<path_to_your_venv>/bin/activate' with your own virtual environment's activation path.
-      - Under the section [install] [[symlink_dirs]] [[[slurm_platform]]], set 'run' to match CYLC_RUN_DIR.
+3. Create a `global.cylc` file to store global configurations. There's an `example_global.cylc` file in `PolarRoute-pipeline/flow`. Copy it to the path you set in `CYLC_CONF_PATH`, and rename the copy to `global.cylc`. Change it as follows:
+      - Under `global init-script`, replace the value of `HOME=` to the path to your user space on your computing resource.
+      - Correct the `CYLC_RUN_DIR` to the path you set in step 5 of `Cloning and setting up installation directories`, e.g. `/your/home/directory/cylc-run`
+      - Replace `<path_to_your_venv>/bin/activate` with your own virtual environment's activation path.
+      - Under the section [install] [[symlink_dirs]] [[[slurm_platform]]], set 'run' to match `CYLC_RUN_DIR`.
 
 4. In the terminal, type `cylc config` and check that the output matches your own global.cylc.
       - If it does, cylc is detecting your configuration.
-      - If it doesn't, check that environment variable $CYLC_CONF_PATH is set correctly and that the global.cylc file is in there.
+      - If it doesn't, check that environment variable `$CYLC_CONF_PATH` is set correctly and that the global.cylc file is in there.
 
 
 ## Setting up download credentials for downloaded products
@@ -100,13 +100,13 @@ rm *.pdf
 
 ## Configuring PolarRoute-pipeline
 
-An 'environment.cylc' file is used to provide environment variables to the PolarRoute-pipeline.
+An `environment.cylc` file is used to provide environment variables to the PolarRoute-pipeline.
 
-1. In your cloned repo, create a copy of 'example_environment.cylc' and name it to 'environment.cylc' (gitignored)
+1. In your cloned repo, create a copy of `example_environment.cyl`' and name it to `environment.cylc` (gitignored)
 
-2. Inside 'environment.cylc', change the variables to ones that make sense for your current deployment.
+2. Inside `environment.cylc`, change the variables to ones that make sense for your current deployment.
 Follow the guidance provided in the comments in that file.
-      - Populate PYTHON_PATH with the path to Python in your PolarRoute-pipeline virtual enviroment
+      - Populate `PYTHON_PATH` with the path to Python in your PolarRoute-pipeline virtual enviroment
       - DATASTORE through PUSH are directories which will be created to hold output data. The pipeline will create them if they don't exist already. Select appropriate paths.
 
       | Variable name  | Purpose |
