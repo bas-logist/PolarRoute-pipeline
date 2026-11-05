@@ -32,6 +32,7 @@ for ((i = 0; i <= 3; i++)); do
     else
         # Download the data
         if ! copernicusmarine get \
+            --credentials-file "${COPERNICUS_FILE_CREDENTIALS}" \
             --dataset-id cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D \
             --filter "*${DUACS_ORIGINAL_PREFIX}_${originaldate}*" \
             --output-directory "${OUTPUT_DIRECTORY}" \

@@ -38,7 +38,7 @@
                 {% if SKIP_OPTION != "vessel" %}
                     {% if SKIP_OPTION != "region" %}
                         create_output_directories =>
-                        data_get_credentials => data_retrieve_duacs => data_subset_duacs
+                        data_set_up_copernicus_credentials => data_retrieve_duacs => data_subset_duacs
                         data_subset_duacs & data_retrieve_amsr => \
                         check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
                     {% endif %}
@@ -79,8 +79,8 @@
             AMSR_URLS_SOUTH_MIDDLE = "asi-AMSR2-s6250-" #date after
             AMSR_URLS_END = "-v5.4.nc"
             OUTPUT_DIRECTORY = "${DATASTORE}/sic/amsr2"
-    [[data_get_credentials]]
-        script = data_get_credentials.sh
+    [[data_set_up_copernicus_credentials]]
+        script = data_set_up_copernicus_credentials.sh
     [[data_retrieve_duacs]]
         script = data_retrieve_duacs.sh
         [[[environment]]]

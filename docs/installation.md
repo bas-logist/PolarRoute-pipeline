@@ -78,6 +78,7 @@ echo <your-unique-password> > $HOME/.copernicusmarine/password
 # switch history logging back on
 set -o history
 ```
+During normal operation, the pipeline will use the username and password to generate a credentials file, that will be accessed by Copernicus for the rest of the pipeline run.
 
 
 ## Obtaining larger static datasets 
