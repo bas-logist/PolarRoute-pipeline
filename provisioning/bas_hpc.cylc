@@ -14,7 +14,7 @@
     [[data_retrieve_amsr]]
         [[[directives]]]
             --time = 00:15:00 # large file to download
-    [[data_get_credentials]]
+    [[data_set_up_copernicus_credentials]]
         [[[directives]]]
             --time = 00:02:00
             --mem = 500M

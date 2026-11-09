@@ -136,17 +136,15 @@
     [[[environment]]]
         METADATA_VERSION = "0.0.2"
         TARGET_FILE_FULLPATH = "${CHECKPOINT}/files_needing_metadata.txt"
-        OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+        OUTPUT_DIRECTORY = "${CHECKPOINT}"
         OUTPUT_FILENAME = "upload_metadata.yaml"
         ECHO_SHELL = False
 [[mesh_compress]]
-    script = "mesh_compress.sh"
-    [[[environment]]]
-        INPUT_DIRECTORY = "${CHECKPOINT}"
+    # gzip any JSONs in the checkpoint directory, keep originals
+    script = gzip -f -k "${CHECKPOINT}"/*.json
 [[metadata_compress]]
-    script = "metadata_compress.sh"
-    [[[environment]]]
-        INPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+    # gzip any JSONs in the checkpoint directory
+    script = gzip -f -k "${CHECKPOINT}"/*.yaml
 [[upload_prepare_file_list]]
     script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list.main()'
     [[[environment]]]
@@ -161,7 +159,7 @@
     [[[environment]]]
         INPUT_DIRECTORY = "${STAGING}"
 [[send_to_staging]]
-    script = "upload_prepare.sh"
+    script = "upload_move_to_staging.sh"
     [[[environment]]]
         INPUT_DIRECTORY = "${CHECKPOINT}"
         FILE_LIST = "upload_prepare_file_list.txt"

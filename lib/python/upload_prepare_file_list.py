@@ -17,6 +17,8 @@ def main():
     # Make a list of files we want to upload
     with open(f"{INPUT_DIRECTORY}/{LIST_OF_FILES}") as f:
         output_filelist = f.read().splitlines()
+    # Stick the .gz on the end
+    output_filelist = [f"{i}.gz" for i in output_filelist if i.split(".")[-1] != "gz"]
     output_filelist.append(f"{INPUT_DIRECTORY}/{METADATA_FILENAME}")
 
     # Clean out already-existing files from this directory

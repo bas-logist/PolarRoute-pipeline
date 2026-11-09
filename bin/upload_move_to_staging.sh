@@ -11,17 +11,20 @@ echo $date
 
 # Decompress and recompress files to upload directory with unique datetime
 for eachfile in $all_files_to_copy
+# Note 'eachfile' is a full path
 do
     if [[ $eachfile == *".json.gz"* ]]; then
-        file_name=${eachfile%".json.gz"}
+        base_name=$(basename ${eachfile})
+        file_name=${base_name%".json.gz"}
         echo $file_name.json
-        gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.json
+        gzip -dcf ${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.json
         gzip -f ${OUTPUT_DIRECTORY}/${file_name}${date}.json
 
     elif [[ $eachfile == *".yaml.gz"* ]]; then
-        file_name=${eachfile%".yaml.gz"}
+        base_name=$(basename ${eachfile})
+        file_name=${base_name%".yaml.gz"}
         echo $file_name.yaml
-        gzip -dcf ${INPUT_DIRECTORY}/${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
+        gzip -dcf ${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
         yaml_file=${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
         # Leave the metadata yaml unzipped as the next step needs to correct the unique filenames
 
@@ -33,11 +36,11 @@ echo "Correcting unique filenames in metadata yaml"
 for eachfile in $all_files_to_copy
 do
     if [[ $eachfile == *".json.gz"* ]]; then
-        file_name=${eachfile%".json.gz"}
+        base_name=$(basename ${eachfile})
+        file_name=${base_name%".json.gz"}
         echo $file_name${date}.json
         replace_command='s/'${file_name}'.json/'${file_name}${date}'.json/g'
         sed -i -e ${replace_command} ${yaml_file}
-    
     fi
 done
 
