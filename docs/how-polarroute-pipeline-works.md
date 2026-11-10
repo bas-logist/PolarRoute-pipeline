@@ -82,7 +82,8 @@ records:
 -   filepath:
     valid_date:
     created:
-    size:
+    size: # file size in bytes
+    md5: # md5sum of the file, before compression
     latlong: # currently filled with data from applicable region configs
         latmin:
         latmax:
