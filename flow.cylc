@@ -48,7 +48,7 @@
             {% endfor %}
             metadata_make_single_file_list => metadata_generate_all => \
             mesh_compress & metadata_compress => \
-            upload_prepare_file_list => clear_staging => send_to_staging => \
+            clear_staging => send_to_staging => \
             {% if S3_UPLOAD == "true" %}
                 s3_upload & upload_push_all
             {% else %}
@@ -145,14 +145,6 @@
 [[metadata_compress]]
     # gzip any JSONs in the checkpoint directory
     script = gzip -f -k "${CHECKPOINT}"/*.yaml
-[[upload_prepare_file_list]]
-    script = ${PYTHON_PATH} -c 'import upload_prepare_file_list; upload_prepare_file_list.main()'
-    [[[environment]]]
-        LIST_OF_FILES = "files_needing_metadata.txt"
-        INPUT_DIRECTORY = "${CHECKPOINT}"
-        METADATA_FILENAME =  "upload_metadata.yaml.gz"
-        OUTPUT_DIRECTORY = "${CHECKPOINT}"
-        OUTPUT_FILENAME = "upload_prepare_file_list.txt"
 [[upload_clear_staging]]
     # Ensure old run material is out of staging area
     script = "clear_staging.sh"
@@ -162,7 +154,8 @@
     script = "upload_move_to_staging.sh"
     [[[environment]]]
         INPUT_DIRECTORY = "${CHECKPOINT}"
-        FILE_LIST = "upload_prepare_file_list.txt"
+        FILE_LIST = "files_needing_metadata.txt"
+        METADATA_FILENAME =  "upload_metadata.yaml.gz"
         OUTPUT_DIRECTORY = "${STAGING}"
 [[s3_upload]]
     script = ${PYTHON_PATH} -c 'import upload_s3; upload_s3.main()'

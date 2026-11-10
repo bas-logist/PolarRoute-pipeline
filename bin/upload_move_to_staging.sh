@@ -5,44 +5,17 @@ set -e
 # Extract names of files we need to prepare for upload, to an array
 readarray -t all_files_to_copy < ${INPUT_DIRECTORY}/${FILE_LIST}
 
-# Date for indexing
-date=$(date --utc +"_%Y%m%dT%H%M%S")
-echo $date
+# Move metadata to staging
+echo "Copy metadata from: "${INPUT_DIRECTORY}/${METADATA_FILENAME}" to: "${OUTPUT_DIRECTORY}/${METADATA_FILENAME}
 
-# Decompress and recompress files to upload directory with unique datetime
-for eachfile in $all_files_to_copy
-# Note 'eachfile' is a full path
+cp ${INPUT_DIRECTORY}/${METADATA_FILENAME} ${OUTPUT_DIRECTORY}/${METADATA_FILENAME}
+
+# Send mesh files to staging
+for eachfile in ${all_files_to_copy[@]}
 do
-    if [[ $eachfile == *".json.gz"* ]]; then
-        base_name=$(basename ${eachfile})
-        file_name=${base_name%".json.gz"}
-        echo $file_name.json
-        gzip -dcf ${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.json
-        gzip -f ${OUTPUT_DIRECTORY}/${file_name}${date}.json
-
-    elif [[ $eachfile == *".yaml.gz"* ]]; then
-        base_name=$(basename ${eachfile})
-        file_name=${base_name%".yaml.gz"}
-        echo $file_name.yaml
-        gzip -dcf ${eachfile} > ${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
-        yaml_file=${OUTPUT_DIRECTORY}/${file_name}${date}.yaml
-        # Leave the metadata yaml unzipped as the next step needs to correct the unique filenames
-
-    fi
+    #make sure to get the zipped copy not the unzipped one
+    eachfile=${eachfile}".gz"
+    base_name=$(basename ${eachfile})
+    echo "Copy mesh file from: "${eachfile}" to: "${OUTPUT_DIRECTORY}/${base_name}
+    cp ${eachfile} ${OUTPUT_DIRECTORY}/${base_name}
 done
-
-# Correct the filenames inside the metadata yaml file
-echo "Correcting unique filenames in metadata yaml"
-for eachfile in $all_files_to_copy
-do
-    if [[ $eachfile == *".json.gz"* ]]; then
-        base_name=$(basename ${eachfile})
-        file_name=${base_name%".json.gz"}
-        echo $file_name${date}.json
-        replace_command='s/'${file_name}'.json/'${file_name}${date}'.json/g'
-        sed -i -e ${replace_command} ${yaml_file}
-    fi
-done
-
-# Re-zip the corrected metadata yaml file
-gzip -f ${yaml_file}
