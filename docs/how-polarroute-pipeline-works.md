@@ -64,6 +64,33 @@ When you play the pipeline, you pass a set file (see [set-file](https://github.c
 
 Important files are saved to locations specified in the environment.cylc file and in flow.cylc. Other cylc outputs are saved in standardised way. Some useful files and directories are as follows. Substitute the actual name of a task, e.g. `data_retrieve_amsr`, for `task_name`.
 
+#### Key outputs
+The outputs of primary interest are:
+- A region mesh file, in compressed JSON format
+- A region mesh file, in compressed JSON format
+- A metadata file describing attributes of the above mesh files, in YAML format. It generally looks like this:
+
+```
+info:
+    description:
+    version:
+    created:
+    user: # who ran the pipeline
+parameters: # parameters requested when created the file, e.g. filepath
+records:
+# a record for each file
+-   filepath:
+    valid_date:
+    created:
+    size:
+    latlong: # currently filled with data from applicable region configs
+        latmin:
+        latmax:
+        lonmin:
+        lonmax:
+```
+
+
 #### The bash file **actually** run by cylc
 Can be useful in trouble-shooting.
 See under: `/install_location/polarroute-pipeline/runN/.service/etc/job.sh`
