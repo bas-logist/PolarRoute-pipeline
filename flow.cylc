@@ -28,6 +28,9 @@
             {% if not SKIP_OPTION in ["region", "vessel", "none"] %}
                 {{ raise("Invalid value of set-file SKIP_OPTION: " + str(SKIP_OPTION)) }}
             {% endif %}
+            {% if not S3_UPLOAD in ["true", "false"] %}
+                {{ raise("Invalid value of set-file S3_UPLOAD: " + str(S3_UPLOAD)) }}
+            {% endif %}
             {% for RV in REGIONS_VESSELS %}
                 {% if "vessel" not in RV or "region" not in RV %}
                     {{ raise("Required keys missing from set-file REGIONS_VESSELS: each dictionary needs vessel and region") }}
