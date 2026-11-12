@@ -78,6 +78,7 @@ echo <your-unique-password> > $HOME/.copernicusmarine/password
 # switch history logging back on
 set -o history
 ```
+During normal operation, the pipeline will use the username and password to generate a credentials file, that will be accessed by Copernicus for the rest of the pipeline run.
 
 
 ## Obtaining larger static datasets 
@@ -111,6 +112,7 @@ An `environment.cylc` file is used to provide environment variables to the Polar
 
 2. Inside `environment.cylc`, change the variables to ones that make sense for your current deployment.
 Follow the guidance provided in the comments in that file.
+      - Populate `ENV_ACTIVATE_PATH` with the path to the 'activate' script in your PolarRoute-pipeline virtual enviroment
       - Populate `PYTHON_PATH` with the path to Python in your PolarRoute-pipeline virtual enviroment
       - DATASTORE through PUSH are directories which will be created to hold output data. The pipeline will create them if they don't exist already. Select appropriate paths.
 
