@@ -9,6 +9,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # Get the current date
 current_date=$(date --utc +%Y%m%d)
 

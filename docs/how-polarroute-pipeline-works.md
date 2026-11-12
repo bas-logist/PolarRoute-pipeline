@@ -20,7 +20,7 @@ The `graph` section details which details what tasks are to be performed, and th
 
 The details of the tasks are written in subheadings under the `runtime` section. For cylc, these largely consist of the script which is run, and any task-specific environmental variables that need to be set before running. Python scripts are stored in [/lib/python](https://github.com/bas-logist/PolarRoute-pipeline/lib/python) and bash scripts are stored in [/bin](https://github.com/bas-logist/PolarRoute-pipeline/bin). Currently, the environment variable lists are longer than strictly needed, because global variables defined in `environment.cylc` (see next section) don't need to be entered again. This is a design choice to try to improve clarity.
 
-As an example: `data_retrieve_amsr` appears in the graph, showing that `check_active_hours` won't run until both `data_retrieve_amsr` and `data_subset_duacs` have completed: `data_subset_duacs & data_retrieve_amsr => check_active_hours`. Under `runtime`, a `[[data_retrieve_amsr]]` sub-headed section tells us that the pipeline job must run `data_retrieve_amsr.sh`, and pass it a list of environment variables, like the resource URL `AMSR_URLS_NORTH_START`.
+As an example: `data_retrieve_amsr` appears in the graph, showing that `check_datastore_manifest` won't run until both `data_retrieve_amsr` and `data_subset_duacs` have completed: `data_subset_duacs & data_retrieve_amsr => check_datastore_manifest`. Under `runtime`, a `[[data_retrieve_amsr]]` sub-headed section tells us that the pipeline job must run `data_retrieve_amsr.sh`, and pass it a list of environment variables, like the resource URL `AMSR_URLS_NORTH_START`.
 
 ### Setting up
 #### Set how cylc runs on your computer

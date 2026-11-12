@@ -2,15 +2,14 @@
     [[root]]
         [[[environment]]]
             # These are global environment variables, which can be accessed by any pipeline step
-            PYTHON_PATH = "/path/to/python/in/appropriate/virtual/env/python"
+            ENV_ACTIVATE_PATH = "/path/to/python/in/appropriate/virtual/env/bin/activate"
+            PYTHON_PATH = "/path/to/python/in/appropriate/virtual/env/bin/python"
             # for DATASTORE through PUSH, use the production locations for prod, or 
             # any accessible path with room for big files for testing
             DATASTORE = "/path/to/datastore"
             CHECKPOINT = "/path/to/checkpoint"
             STAGING = "/path/to/staging"
             PUSH = "/path/to/push"
-            # Give hours of the day when you're OK with the application running
-            APPLICATION_ACTIVEHOURS = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
             DATASTORE_MANIFEST_DEPTH = "4"
             # _USERNAME and _PASSWORD paths point to a CopernicusMarine API username and password,
             # for downloading data. The Copernicus log-in process will write to COPERNICUS_FILE_CREDENTIALS.

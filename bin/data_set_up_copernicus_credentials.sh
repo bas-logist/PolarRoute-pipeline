@@ -2,6 +2,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # CopernicusMarine Credentials - use Copernicus credentials file format
 if [ -f "$COPERNICUS_FILE_USERNAME" ] && [ -f "$COPERNICUS_FILE_PASSWORD" ]; then
     COPERNICUS_USER=$(< "${COPERNICUS_FILE_USERNAME}")

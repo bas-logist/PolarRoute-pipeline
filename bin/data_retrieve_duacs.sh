@@ -12,6 +12,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # Create the output dir if it doesn't exist
 mkdir -p "${OUTPUT_DIRECTORY}"
 

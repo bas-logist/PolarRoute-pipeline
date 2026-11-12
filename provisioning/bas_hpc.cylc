@@ -26,10 +26,6 @@
         [[[directives]]]
             --time = 00:10:00
             --mem = 500M
-    [[check_active_hours]]
-        [[[directives]]]
-            --time = 00:01:00
-            --mem = 50M
     [[check_datastore_manifest]]
         [[[directives]]]
             --time = 00:05:00

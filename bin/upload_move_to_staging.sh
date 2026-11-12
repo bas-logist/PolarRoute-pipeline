@@ -2,6 +2,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # Extract names of files we need to prepare for upload, to an array
 readarray -t all_files_to_copy < ${INPUT_DIRECTORY}/${FILE_LIST}
 

@@ -12,6 +12,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # Define specific xfer product directories
 siis_MEVJ_dir="siis.meshiphi-json.s"      # (ME)shiphi with (V)essel (J)SON
 siis_OPRM_dir="siis.polarroute-meta.y"    # (O)perational (P)olar(R)oute (M)etadata
