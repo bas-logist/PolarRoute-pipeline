@@ -2,6 +2,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # Symlinking necessary, because the config files specify their resource paths relative to 
 # a directory called 'datastore'. Search an environment config for 'folder' to
 # see an example.

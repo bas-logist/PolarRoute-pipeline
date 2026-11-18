@@ -12,6 +12,9 @@
 
 set -e
 
+# Activate virtual environment
+source ${ENV_ACTIVATE_PATH}
+
 # Create the output dir if it doesn't exist
 mkdir -p "${OUTPUT_DIRECTORY}"
 
@@ -32,6 +35,7 @@ for ((i = 0; i <= 3; i++)); do
     else
         # Download the data
         if ! copernicusmarine get \
+            --credentials-file "${COPERNICUS_FILE_CREDENTIALS}" \
             --dataset-id cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D \
             --filter "*${DUACS_ORIGINAL_PREFIX}_${originaldate}*" \
             --output-directory "${OUTPUT_DIRECTORY}" \

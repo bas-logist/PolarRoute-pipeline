@@ -251,8 +251,8 @@ def main():
         {
             "created": True,
             "size": True,
-            "md5": md5,
-            "meshiphi": meshiphi,
+            "md5": True,
+            "meshiphi": True,
             "latlong": True
         }, valid_date)
     generate_output(target_file_list, parameter_list, ECHO_SHELL, valid_date,

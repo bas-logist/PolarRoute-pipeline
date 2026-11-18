@@ -20,7 +20,7 @@ The `graph` section details which details what tasks are to be performed, and th
 
 The details of the tasks are written in subheadings under the `runtime` section. For cylc, these largely consist of the script which is run, and any task-specific environmental variables that need to be set before running. Python scripts are stored in [/lib/python](https://github.com/bas-logist/PolarRoute-pipeline/lib/python) and bash scripts are stored in [/bin](https://github.com/bas-logist/PolarRoute-pipeline/bin). Currently, the environment variable lists are longer than strictly needed, because global variables defined in `environment.cylc` (see next section) don't need to be entered again. This is a design choice to try to improve clarity.
 
-As an example: `data_retrieve_amsr` appears in the graph, showing that `check_active_hours` won't run until both `data_retrieve_amsr` and `data_subset_duacs` have completed: `data_subset_duacs & data_retrieve_amsr => check_active_hours`. Under `runtime`, a `[[data_retrieve_amsr]]` sub-headed section tells us that the pipeline job must run `data_retrieve_amsr.sh`, and pass it a list of environment variables, like the resource URL `AMSR_URLS_NORTH_START`.
+As an example: `data_retrieve_amsr` appears in the graph, showing that `check_datastore_manifest` won't run until both `data_retrieve_amsr` and `data_subset_duacs` have completed: `data_subset_duacs & data_retrieve_amsr => check_datastore_manifest`. Under `runtime`, a `[[data_retrieve_amsr]]` sub-headed section tells us that the pipeline job must run `data_retrieve_amsr.sh`, and pass it a list of environment variables, like the resource URL `AMSR_URLS_NORTH_START`.
 
 ### Setting up
 #### Set how cylc runs on your computer
@@ -63,6 +63,34 @@ When you play the pipeline, you pass a set file (see [set-file](https://github.c
 ### Overview 
 
 Important files are saved to locations specified in the environment.cylc file and in flow.cylc. Other cylc outputs are saved in standardised way. Some useful files and directories are as follows. Substitute the actual name of a task, e.g. `data_retrieve_amsr`, for `task_name`.
+
+#### Key outputs
+The outputs of primary interest are:
+- A region mesh file, in compressed JSON format
+- A region mesh file, in compressed JSON format
+- A metadata file describing attributes of the above mesh files, in YAML format. It generally looks like this:
+
+```
+info:
+    description:
+    version:
+    created:
+    user: # who ran the pipeline
+parameters: # parameters requested when created the file, e.g. filepath
+records:
+# a record for each file
+-   filepath:
+    valid_date:
+    created:
+    size: # file size in bytes
+    md5: # md5sum of the file, before compression
+    latlong: # currently filled with data from applicable region configs
+        latmin:
+        latmax:
+        lonmin:
+        lonmax:
+```
+
 
 #### The bash file **actually** run by cylc
 Can be useful in trouble-shooting.
