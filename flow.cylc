@@ -40,9 +40,10 @@
             {% for RV in REGIONS_VESSELS %}
                 {% if SKIP_OPTION != "vessel" %}
                     {% if SKIP_OPTION != "region" %}
-                        create_output_directories =>
-                        data_set_up_copernicus_credentials => data_retrieve_duacs => data_subset_duacs
-                        data_subset_duacs & data_retrieve_amsr => \
+                        create_output_directories => data_set_up_copernicus_credentials => data_retrieve_duacs => data_subset_duacs
+                        create_output_directories => data_retrieve_gebco => data_edit_gebco
+                        create_output_directories => data_retrieve_amsr
+                        data_subset_duacs & data_retrieve_amsr & data_edit_gebco => \
                         check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
                     {% endif %}
                     vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
@@ -97,6 +98,14 @@
             DUACS_ORIGINAL_PREFIX = "nrt_global_allsat_phy_l4" # for identifying files which need subsetting
             DUACS_SUBSET_PREFIX = "duacs_nrt"
             OUTPUT_DIRECTORY = "${DATASTORE}/currents/duacs-nrt/global"
+    [[data_retrieve_gebco]]
+        script = data_retrieve_gebco.sh
+        [[[environment]]]
+            # CURRENTYEAR (all caps) in the GEBCO_URL_PATTERN will be substituted with the current year
+            GEBCO_URL_PATTERN = "https://data.ceda.ac.uk/bodc/gebco/global/gebco_CURRENTYEAR/" +
+            "sub_ice_topography_bathymetry/netcdf/GEBCO_CURRENTYEAR_sub_ice.nc"
+            OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
+            OUTPUT_FILENAME_PREFIX = "gebco_raw_download"
     [[check_datastore_manifest]]
         script = ${PYTHON_PATH} -c 'import check_datastore_manifest; check_datastore_manifest.main()'
         [[[environment]]]
