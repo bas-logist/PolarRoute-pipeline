@@ -9,6 +9,13 @@ source ${ENV_ACTIVATE_PATH}
 # Get the current date
 current_year=$(date +%Y)
 
+# Skip downloading if we already have a processed GEBCO this year
+processed_gebco=${PROCESSED_OUTPUT_DIRECTORY}/${PROCESSED_OUTPUT_FILENAME_PREFIX}_${current_year}.nc
+if test -f ${processed_gebco}; then
+    echo "A processed GEBCO file for this year already exists at "${processed_gebco}"- skipping download"
+    exit(0)
+fi
+
 # wget retries and timeouts
 retries=3
 timeout=20
@@ -17,12 +24,12 @@ timeout=20
 download_url=$(echo "$GEBCO_URL_PATTERN" | sed "s/CURRENTYEAR/$current_year/g")
 echo Preparing to download GEBCO data from: $download_url
 
-output_filename=${OUTPUT_FILENAME_PREFIX}_${current_year}.nc
-echo Preparing to download GEBCO data to path: ${OUTPUT_DIRECTORY}/${output_filename} 
+raw_output_filename=${RAW_OUTPUT_FILENAME_PREFIX}_${current_year}.nc
+echo "Preparing to download GEBCO data to path: "${RAW_OUTPUT_DIRECTORY}"/"${raw_output_filename} 
 
 # Retrieve the files
 if ! wget -r -nv -nc -nd -np -nH --tries=${retries} --timeout=${timeout} -e robots=off "${download_url}" \
--P ${OUTPUT_DIRECTORY}/ -O ${output_filename}; then
-    echo GEBCO data file not downloaded from ${download_url} to ${OUTPUT_DIRECTORY}/${output_filename}
+-P ${RAW_OUTPUT_DIRECTORY}/ -O ${output_raw_filename}; then
+    echo "GEBCO data file for "${current_year}" failed to download from "${download_url}" to "${RAW_OUTPUT_DIRECTORY}"/"${raw_output_filename}
 fi
 
