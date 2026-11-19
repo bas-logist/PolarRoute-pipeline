@@ -40,10 +40,9 @@
             {% for RV in REGIONS_VESSELS %}
                 {% if SKIP_OPTION != "vessel" %}
                     {% if SKIP_OPTION != "region" %}
-                        create_output_directories => data_set_up_copernicus_credentials => data_retrieve_duacs => data_subset_duacs
-                        create_output_directories => data_retrieve_gebco => data_edit_gebco
-                        create_output_directories => data_retrieve_amsr
-                        data_subset_duacs & data_retrieve_amsr & data_edit_gebco => \
+                        create_output_directories => data_set_up_copernicus_credentials => \
+                        data_retrieve_duacs => data_subset_duacs
+                        data_subset_duacs & data_retrieve_amsr => \
                         check_datastore_manifest => mesh_generate_{{ RV["region"] }} => 
                     {% endif %}
                     vessel_add_{{ RV["region"] }}_{{ RV["vessel"] }} => \
@@ -102,8 +101,7 @@
         script = data_retrieve_gebco.sh
         [[[environment]]]
             # CURRENTYEAR (all caps) in the GEBCO_URL_PATTERN will be substituted with the current year
-            GEBCO_URL_PATTERN = "https://data.ceda.ac.uk/bodc/gebco/global/gebco_CURRENTYEAR/" +
-            "sub_ice_topography_bathymetry/netcdf/GEBCO_CURRENTYEAR_sub_ice.nc"
+            GEBCO_URL_PATTERN = "https://data.ceda.ac.uk/bodc/gebco/global/gebco_CURRENTYEAR/sub_ice_topography_bathymetry/netcdf/GEBCO_CURRENTYEAR_sub_ice.nc"
             RAW_OUTPUT_FILENAME_PREFIX = "gebco_raw_download"
             RAW_OUTPUT_DIRECTORY = "${CYLC_WORKFLOW_SHARE_DIR}"
             PROCESSED_OUTPUT_FILENAME_PREFIX = "gebco_global"
@@ -112,7 +110,7 @@
         script = ${PYTHON_PATH} -c 'import edit_gebco; edit_gebco.main()'
         [[[environment]]]
             #TODO: add in year-sensitivity as for data_retrieve_gebco.sh
-            INPUT_FULLPATH =
+            INPUT_FULLPATH = 
             OUTPUT_FULLPATH =
             KEEP_VARS =
     [[check_datastore_manifest]]

@@ -43,9 +43,9 @@ The options:
 
 ## Checking output logs
 
-Output logs will all be viewable under: `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
-
-- For 'stdout'/'stderr' format files for each task, see: `/log/job/<name_of_task>/01/job.out` and `/log/job/<name_of_task>/01/job.err`
+- Output logs are viewable under: `<your_run_directory>/cylc-run/polarroute-pipeline/runNumber`
+- Logs are split by task, rather than going to a single large file for the overall pipeline. For 'stdout'/'stderr' format files for each task, see: `/log/job/<name_of_task>/01/job.out` and `/log/job/<name_of_task>/01/job.err`
+- Messages are sent to logs using 'echo' for bash scripts, and the 'logging' library for Python scripts. These default to the same 'stdout'/'stderr' files regardless of the programming language used.
 
 
 ## Stopping and cleaning up the pipeline

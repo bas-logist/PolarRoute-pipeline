@@ -5,10 +5,11 @@ Notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased, version TBC]
+## [Unreleased, version 3]
 
 ### Added
 
+- Add GEBCO file downloading
 - Add uv files for version management: uv.lock, pyproject, .python-version
 - Add this changelog
 
