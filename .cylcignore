@@ -21,3 +21,6 @@ checkpoint
 outputs
 staging
 push
+
+# Testing outputs
+__pycache__

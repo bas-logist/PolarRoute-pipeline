@@ -8,6 +8,9 @@ outputs/*
 # docs
 site/
 
+# testing outputs
+__pycache__
+
 # Ignore cylc files that will contain site and user-specific data
 flow/global.cylc
 environment.cylc

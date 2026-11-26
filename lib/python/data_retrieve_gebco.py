@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import logging
 import sys
@@ -53,8 +53,11 @@ def download_gebco_for_specified_year(year: str,
             logger.error(f"404 error for URL {download_url} - trying earlier year")
 
             previous_year = datetime.datetime.strptime(year, "%Y%m")
-            #TODO: if previous_year not further back in time than recursion limit
-            if 
+            # try last year, if this isn't out of the range set by year_recursion_depth
+            earliest_permitted_year = datetime.datetime.today().year - timedelta(
+                years=int(year_recursion_depth)
+                )
+            if previous_year < earliest_permitted_year:
                 download_gebco_for_specified_year(
                     str(previous_year.year),
                     gebco_url_pattern,
@@ -62,6 +65,9 @@ def download_gebco_for_specified_year(year: str,
                     output_directory,
                     year_recursion_depth
                 )
+            else:
+                logger.error(f"GEBCO file not found within time period set by "
+                             f"{year_recursion_depth!r} - check URLs valid")
             
     with open(f"{RAW_OUTPUT_DIRECTORY}/{output_filename}", mode="wb") as file:
         for chunk in response.iter_content(chunk_size=10 * 1024):
