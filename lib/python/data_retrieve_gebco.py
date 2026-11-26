@@ -4,6 +4,8 @@ from pathlib import Path
 import logging
 import sys
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 
 # setup logging
 logging.basicConfig(level=logging.INFO)
@@ -45,8 +47,17 @@ def download_gebco_for_specified_year(year: str,
     timeout = 20
     retries = 3
     try:
+        s = requests.Session()
+        retries = Retry(
+            total=retries,
+            backoff_factor=0.1,
+            allowed_methods={'GET'}
+        )
+        s.mount('https://', HTTPAdapter(max_retries=retries))
         response = requests.get(download_url, stream=True, timeout=timeout,
                                 retries=retries)
+        logger.info(f"Downloaded GEBCO data from {download_url} to"
+                f"{output_directory}/{output_filename}")
         response.raise_for_status()
     except requests.exceptions.HTTPError as error:
         if error.response.status_code == "404":
@@ -72,6 +83,7 @@ def download_gebco_for_specified_year(year: str,
     with open(f"{RAW_OUTPUT_DIRECTORY}/{output_filename}", mode="wb") as file:
         for chunk in response.iter_content(chunk_size=10 * 1024):
             file.write(chunk)
+    logger.info(f"GEBCO data finished saving to: {RAW_OUTPUT_DIRECTORY}/{output_filename}")
 
 
 def main():
